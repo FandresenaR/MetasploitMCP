@@ -57,10 +57,10 @@ The server includes AI-powered analysis features using OpenRouter. To enable the
 
 1. Sign up for an OpenRouter account at https://openrouter.ai/
 2. Get your API key from the OpenRouter dashboard
-3. Copy `.env.example` to `.env` and configure your API key:
+3. Copy `.env.example` to `.env.local` and configure your API key:
    ```
-   cp .env.example .env
-   # Edit .env with your OpenRouter API key
+   cp .env.example .env.local
+   # Edit .env.local with your OpenRouter API key
    ```
 4. Or set environment variables directly:
    ```
@@ -114,6 +114,8 @@ This script will automatically load environment variables from `.env.local` if i
    OPENROUTER_API_KEY=your_openrouter_api_key  # Optional: For AI features
    OPENROUTER_MODEL=anthropic/claude-3-haiku:beta  # Optional: AI model to use
    ```
+   
+   **Note:** A `.env.local` template file is already provided in the repository. Copy `.env.example` to `.env.local` and edit it with your actual values.
 
 ## Usage
 
@@ -170,6 +172,8 @@ For Claude Desktop integration, configure `claude_desktop_config.json`:
     }
 }
 ```
+
+**Note:** Environment variables can also be configured in a `.env.local` file in the project directory.
 
 ### Other MCP Clients
 
@@ -370,6 +374,11 @@ By default, payloads generated with `generate_payload` are saved to a `payloads`
   ```
 
 **Note:** If you specify a custom path, make sure it exists or the application has permission to create it. If the path is invalid, payload generation might fail.
+
+You can also set this in your `.env.local` file:
+```
+PAYLOAD_SAVE_DIR=/custom/path/to/payloads
+```
 
 ## License
 
