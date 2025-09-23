@@ -39,11 +39,63 @@ This MCP server provides a bridge between large language models like Claude and 
 - **start_listener**: Create a new multi/handler to receive connections
 - **stop_job**: Terminate any running job or handler
 
+### AI-Powered Analysis (OpenRouter Integration)
+
+- **analyze_exploit_with_ai**: Use AI to analyze exploits and provide detailed insights and recommendations
+- **generate_metasploit_commands_with_ai**: Generate Metasploit commands from natural language descriptions
+- **analyze_vulnerability_with_ai**: Analyze vulnerabilities and suggest exploitation approaches
+
 ## Prerequisites
 
 - Metasploit Framework installed and msfrpcd running
 - Python 3.10 or higher
 - Required Python packages (see requirements.txt)
+
+## OpenRouter AI Integration (Optional)
+
+The server includes AI-powered analysis features using OpenRouter. To enable these features:
+
+1. Sign up for an OpenRouter account at https://openrouter.ai/
+2. Get your API key from the OpenRouter dashboard
+3. Copy `.env.example` to `.env` and configure your API key:
+   ```
+   cp .env.example .env
+   # Edit .env with your OpenRouter API key
+   ```
+4. Or set environment variables directly:
+   ```
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   OPENROUTER_BASE_URL=https://openrouter.ai/api/v1  # Optional, defaults to this
+   OPENROUTER_MODEL=anthropic/claude-3-haiku:beta    # Optional, defaults to Claude 3 Haiku
+   ```
+
+### Using Your Own Hosted AI
+
+If you have your own AI service that provides an OpenAI-compatible API (like your hosted AI at `https://fandresena-portfolio.netlify.app/myai`), you can configure MetasploitMCP to use it instead:
+
+```bash
+OPENROUTER_API_KEY=your_api_key
+OPENROUTER_BASE_URL=https://fandresena-portfolio.netlify.app/myai/v1  # Adjust the path as needed
+OPENROUTER_MODEL=your_model_name  # The model name your service expects
+```
+
+### AI Features
+
+When configured, the following AI-powered tools become available:
+
+- **analyze_exploit_with_ai**: Provides detailed technical analysis, impact assessment, and safe usage recommendations for Metasploit exploits
+- **generate_metasploit_commands_with_ai**: Converts natural language descriptions into step-by-step Metasploit commands
+- **analyze_vulnerability_with_ai**: Analyzes vulnerability descriptions and suggests appropriate exploitation approaches
+
+### Testing AI Integration
+
+After configuring OpenRouter, test the integration:
+
+```bash
+python test_openrouter.py
+```
+
+This script will automatically load environment variables from `.env.local` if it exists, and verify your API key and connection to OpenRouter.
 
 ## Installation
 
@@ -59,6 +111,8 @@ This MCP server provides a bridge between large language models like Claude and 
    MSF_PORT=55553
    MSF_SSL=false
    PAYLOAD_SAVE_DIR=/path/to/save/payloads  # Optional: Where to save generated payloads
+   OPENROUTER_API_KEY=your_openrouter_api_key  # Optional: For AI features
+   OPENROUTER_MODEL=anthropic/claude-3-haiku:beta  # Optional: AI model to use
    ```
 
 ## Usage
@@ -109,7 +163,8 @@ For Claude Desktop integration, configure `claude_desktop_config.json`:
                 "stdio"
             ],
             "env": {
-                "MSF_PASSWORD": "yourpassword"
+                "MSF_PASSWORD": "yourpassword",
+                "OPENROUTER_API_KEY": "your_openrouter_api_key"
             }
         }
     }

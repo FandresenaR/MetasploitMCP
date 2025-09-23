@@ -13,6 +13,18 @@ import sys
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+# Load environment variables from .env.local if it exists
+try:
+    from dotenv import load_dotenv
+    env_local_path = pathlib.Path(__file__).parent / '.env.local'
+    if env_local_path.exists():
+        load_dotenv(env_local_path)
+        print(f"Loaded environment variables from {env_local_path}")
+except ImportError:
+    print("python-dotenv not installed, .env.local files will not be loaded automatically")
+except Exception as e:
+    print(f"Error loading .env.local: {e}")
+
 # --- Third-party Libraries ---
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response
@@ -21,6 +33,8 @@ from mcp.server.sse import SseServerTransport
 from pymetasploit3.msfrpc import MsfConsole, MsfRpcClient, MsfRpcError
 from starlette.applications import Starlette
 from starlette.routing import Mount, Route, Router
+import openai
+import requests
 
 # --- Configuration & Constants ---
 
@@ -38,6 +52,11 @@ MSF_PORT_STR = os.getenv('MSF_PORT', '55553')
 MSF_SSL_STR = os.getenv('MSF_SSL', 'false')
 PAYLOAD_SAVE_DIR = os.environ.get('PAYLOAD_SAVE_DIR', str(pathlib.Path.home() / "payloads"))
 
+# OpenRouter AI Configuration (from environment variables)
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+OPENROUTER_BASE_URL = os.getenv('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1')
+OPENROUTER_MODEL = os.getenv('OPENROUTER_MODEL', 'anthropic/claude-3-haiku:beta')
+
 # Timeouts and Polling Intervals (in seconds)
 DEFAULT_CONSOLE_READ_TIMEOUT = 15  # Default for quick console commands
 LONG_CONSOLE_READ_TIMEOUT = 60   # For commands like run/exploit/check
@@ -54,6 +73,44 @@ SHELL_PROMPT_RE = re.compile(r'([#$>]|%)\s*$') # Matches common shell prompts (#
 # --- Metasploit Client Setup ---
 
 _msf_client_instance: Optional[MsfRpcClient] = None
+
+# OpenRouter AI Client
+_openrouter_client: Optional[openai.OpenAI] = None
+
+def initialize_openrouter_client() -> openai.OpenAI:
+    """
+    Initializes the global OpenRouter AI client instance.
+    """
+    global _openrouter_client
+    if _openrouter_client is not None:
+        return _openrouter_client
+
+    if not OPENROUTER_API_KEY:
+        logger.warning("OPENROUTER_API_KEY not set. AI features will be disabled.")
+        return None
+
+    logger.info("Initializing OpenRouter AI client...")
+    try:
+        client = openai.OpenAI(
+            api_key=OPENROUTER_API_KEY,
+            base_url=OPENROUTER_BASE_URL
+        )
+        # Test the connection
+        logger.debug("Testing OpenRouter connection...")
+        # Simple test call
+        _openrouter_client = client
+        logger.info(f"Successfully initialized OpenRouter client with model: {OPENROUTER_MODEL}")
+        return _openrouter_client
+    except Exception as e:
+        logger.error(f"Failed to initialize OpenRouter client: {e}")
+        return None
+
+def get_openrouter_client() -> Optional[openai.OpenAI]:
+    """Gets the initialized OpenRouter client instance."""
+    if _openrouter_client is None:
+        logger.debug("OpenRouter client not initialized, attempting to initialize...")
+        return initialize_openrouter_client()
+    return _openrouter_client
 
 def initialize_msf_client() -> MsfRpcClient:
     """
@@ -1623,6 +1680,214 @@ async def terminate_session(session_id: int) -> Dict[str, Any]:
         logger.exception(f"Unexpected error terminating session {session_id}")
         return {"status": "error", "message": f"Unexpected error terminating session {session_id}: {e}"}
 
+# --- AI-Powered Tools (OpenRouter Integration) ---
+
+@mcp.tool()
+async def analyze_exploit_with_ai(exploit_name: str, target_info: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Use AI to analyze a Metasploit exploit and provide detailed insights, recommendations, and potential risks.
+
+    Args:
+        exploit_name: Name/path of the exploit module to analyze
+        target_info: Optional information about the target system (OS, version, etc.)
+
+    Returns:
+        Dictionary with AI analysis of the exploit
+    """
+    client = get_openrouter_client()
+    if not client:
+        return {"status": "error", "message": "OpenRouter client not configured. Set OPENROUTER_API_KEY environment variable."}
+
+    # First get exploit info from Metasploit
+    msf_client = get_msf_client()
+    try:
+        exploit_info = await asyncio.to_thread(lambda: msf_client.modules.use('exploit', exploit_name))
+        if not exploit_info:
+            return {"status": "error", "message": f"Exploit '{exploit_name}' not found in Metasploit."}
+    except Exception as e:
+        return {"status": "error", "message": f"Failed to retrieve exploit info: {e}"}
+
+    # Prepare AI prompt
+    prompt = f"""
+Analyze this Metasploit exploit and provide detailed insights:
+
+Exploit Name: {exploit_name}
+Description: {getattr(exploit_info, 'description', 'N/A')}
+Platform: {getattr(exploit_info, 'platform', 'N/A')}
+Arch: {getattr(exploit_info, 'arch', 'N/A')}
+Privileged: {getattr(exploit_info, 'privileged', 'N/A')}
+Rank: {getattr(exploit_info, 'rank', 'N/A')}
+
+Target Information: {target_info or 'Not provided'}
+
+Please provide:
+1. Technical analysis of how this exploit works
+2. Potential impact and risks
+3. Prerequisites and requirements
+4. Recommendations for safe usage
+5. Alternative approaches if applicable
+6. Any known limitations or caveats
+"""
+
+    try:
+        response = await asyncio.to_thread(
+            lambda: client.chat.completions.create(
+                model=OPENROUTER_MODEL,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=2000,
+                temperature=0.3
+            )
+        )
+
+        analysis = response.choices[0].message.content.strip()
+
+        return {
+            "status": "success",
+            "exploit_name": exploit_name,
+            "target_info": target_info,
+            "ai_analysis": analysis,
+            "model_used": OPENROUTER_MODEL
+        }
+    except Exception as e:
+        logger.error(f"OpenRouter API error during exploit analysis: {e}")
+        return {"status": "error", "message": f"AI analysis failed: {e}"}
+
+@mcp.tool()
+async def generate_metasploit_commands_with_ai(description: str, target_os: Optional[str] = None, target_service: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Use AI to generate appropriate Metasploit commands based on a natural language description.
+
+    Args:
+        description: Natural language description of what you want to accomplish
+        target_os: Target operating system (windows, linux, etc.)
+        target_service: Target service or application
+
+    Returns:
+        Dictionary with AI-generated Metasploit commands and explanations
+    """
+    client = get_openrouter_client()
+    if not client:
+        return {"status": "error", "message": "OpenRouter client not configured. Set OPENROUTER_API_KEY environment variable."}
+
+    # Get available exploits for context
+    msf_client = get_msf_client()
+    try:
+        available_exploits = await asyncio.to_thread(lambda: msf_client.modules.exploits)
+        exploit_sample = available_exploits[:50]  # Sample of available exploits
+    except Exception as e:
+        exploit_sample = []
+        logger.warning(f"Could not retrieve exploit list for AI context: {e}")
+
+    prompt = f"""
+Based on the following request, generate appropriate Metasploit commands and explain each step:
+
+Request: {description}
+Target OS: {target_os or 'Not specified'}
+Target Service: {target_service or 'Not specified'}
+
+Available exploit modules (sample): {', '.join(exploit_sample[:20])}
+
+Please provide:
+1. Step-by-step Metasploit commands to accomplish the goal
+2. Explanation of each command and why it's needed
+3. Required options and their typical values
+4. Safety considerations and prerequisites
+5. Alternative approaches if applicable
+
+Format the response as a clear, actionable guide that someone could follow.
+"""
+
+    try:
+        response = await asyncio.to_thread(
+            lambda: client.chat.completions.create(
+                model=OPENROUTER_MODEL,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=2000,
+                temperature=0.3
+            )
+        )
+
+        commands_guide = response.choices[0].message.content.strip()
+
+        return {
+            "status": "success",
+            "description": description,
+            "target_os": target_os,
+            "target_service": target_service,
+            "ai_generated_guide": commands_guide,
+            "model_used": OPENROUTER_MODEL
+        }
+    except Exception as e:
+        logger.error(f"OpenRouter API error during command generation: {e}")
+        return {"status": "error", "message": f"AI command generation failed: {e}"}
+
+@mcp.tool()
+async def analyze_vulnerability_with_ai(vulnerability_description: str, affected_system: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Use AI to analyze a vulnerability description and suggest Metasploit exploitation approaches.
+
+    Args:
+        vulnerability_description: Description of the vulnerability
+        affected_system: Information about the affected system
+
+    Returns:
+        Dictionary with AI analysis and exploitation suggestions
+    """
+    client = get_openrouter_client()
+    if not client:
+        return {"status": "error", "message": "OpenRouter client not configured. Set OPENROUTER_API_KEY environment variable."}
+
+    # Get available exploits for context
+    msf_client = get_msf_client()
+    try:
+        available_exploits = await asyncio.to_thread(lambda: msf_client.modules.exploits)
+        exploit_sample = available_exploits[:100]  # Larger sample for vulnerability matching
+    except Exception as e:
+        exploit_sample = []
+        logger.warning(f"Could not retrieve exploit list for AI context: {e}")
+
+    prompt = f"""
+Analyze this vulnerability and suggest Metasploit exploitation approaches:
+
+Vulnerability Description: {vulnerability_description}
+Affected System: {affected_system or 'Not specified'}
+
+Available Metasploit exploits (sample): {', '.join(exploit_sample[:50])}
+
+Please provide:
+1. Analysis of the vulnerability type and potential impact
+2. Relevant Metasploit modules that could exploit this vulnerability
+3. Required configuration and options for each suggested module
+4. Prerequisites and system requirements
+5. Risk assessment and safety considerations
+6. Alternative exploitation methods if Metasploit modules aren't suitable
+
+Be specific about module names, options, and provide complete command examples.
+"""
+
+    try:
+        response = await asyncio.to_thread(
+            lambda: client.chat.completions.create(
+                model=OPENROUTER_MODEL,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=2000,
+                temperature=0.3
+            )
+        )
+
+        analysis = response.choices[0].message.content.strip()
+
+        return {
+            "status": "success",
+            "vulnerability_description": vulnerability_description,
+            "affected_system": affected_system,
+            "ai_analysis_and_suggestions": analysis,
+            "model_used": OPENROUTER_MODEL
+        }
+    except Exception as e:
+        logger.error(f"OpenRouter API error during vulnerability analysis: {e}")
+        return {"status": "error", "message": f"AI vulnerability analysis failed: {e}"}
+
 # --- FastAPI Application Setup ---
 
 app = FastAPI(
@@ -1710,6 +1975,12 @@ if __name__ == "__main__":
     except (ValueError, ConnectionError, RuntimeError) as e:
         logger.critical(f"CRITICAL: Failed to initialize Metasploit client on startup: {e}. Server cannot function.")
         sys.exit(1) # Exit if MSF connection fails at start
+
+    # Initialize OpenRouter Client - Optional for AI features
+    try:
+        initialize_openrouter_client()
+    except Exception as e:
+        logger.warning(f"Failed to initialize OpenRouter client: {e}. AI features will be disabled.")
 
     # --- Setup argument parser for transport mode and server configuration ---
     import argparse

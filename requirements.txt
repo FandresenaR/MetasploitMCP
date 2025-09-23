@@ -3,3 +3,6 @@ uvicorn[standard]>=0.22.0
 pymetasploit3>=1.0.6
 mcp>=1.6.0
 fastmcp>=2.10.3
+openai>=1.0.0
+requests>=2.25.0
+python-dotenv>=1.0.0
