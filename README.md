@@ -87,15 +87,15 @@ When configured, the following AI-powered tools become available:
 - **generate_metasploit_commands_with_ai**: Converts natural language descriptions into step-by-step Metasploit commands
 - **analyze_vulnerability_with_ai**: Analyzes vulnerability descriptions and suggests appropriate exploitation approaches
 
-### Testing AI Integration
+### Testing Without Metasploit
 
-After configuring OpenRouter, test the integration:
+For testing the MCP server without a full Metasploit installation, you can run in mock mode:
 
 ```bash
-python test_openrouter.py
+python MetasploitMCP.py --mock --transport http --host 0.0.0.0 --port 8085
 ```
 
-This script will automatically load environment variables from `.env.local` if it exists, and verify your API key and connection to OpenRouter.
+This mode provides mock responses for basic Metasploit functionality and allows you to test the AI features and MCP integration.
 
 ## Installation
 
@@ -140,6 +140,9 @@ python MetasploitMCP.py --transport http
 
 # Run with STDIO transport
 python MetasploitMCP.py --transport stdio
+
+# Run in mock mode for testing (no Metasploit required)
+python MetasploitMCP.py --mock --transport http
 ```
 
 Additional options for HTTP mode:
@@ -187,15 +190,29 @@ For other MCP clients that use HTTP/SSE:
 2. Configure your MCP client to connect to:
    - SSE endpoint: `http://your-server-ip:8085/sse`
 
-## Security Considerations
+## Security Configuration
 
-⚠️ **IMPORTANT SECURITY WARNING**:
+This project includes enhanced security measures:
 
-This tool provides direct access to Metasploit Framework capabilities, which include powerful exploitation features. Use responsibly and only in environments where you have explicit permission to perform security testing.
+### Secure Password Generation
 
-- Always validate and review all commands before execution
-- Only run in segregated test environments or with proper authorization
-- Be aware that post-exploitation commands can result in significant system modifications
+A cryptographically secure password has been generated for Metasploit RPC access:
+- **Length**: 32 characters
+- **Generated using**: OpenSSL rand with base64 encoding
+- **Stored in**: `.env.local` (not committed to version control)
+
+### Environment Variables
+
+- **MSF_PASSWORD**: Securely generated random password
+- **MSF_SSL**: Currently set to `false` (can be enabled for production)
+- **OPENROUTER_API_KEY**: Your OpenRouter API key for AI features
+
+### Best Practices
+
+1. **Never commit secrets**: `.env.local` is in `.gitignore`
+2. **Use SSL in production**: Set `MSF_SSL=true` for encrypted communication
+3. **Regular password rotation**: Generate new passwords periodically
+4. **Access control**: Only run Metasploit RPC on trusted networks
 
 ## Example Workflows
 

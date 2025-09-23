@@ -154,9 +154,38 @@ def initialize_msf_client() -> MsfRpcClient:
 
 def get_msf_client() -> MsfRpcClient:
     """Gets the initialized MSF client instance, raising an error if not ready."""
+    global _msf_client_instance
     if _msf_client_instance is None:
-        logger.error("Metasploit client has not been initialized. Check MSF server connection.")
-        raise ConnectionError("Metasploit client has not been initialized.") # Strict check preferred
+        # Check if we're in mock mode
+        import sys
+        if '--mock' in sys.argv:
+            # Return a mock client for testing
+            class MockMsfClient:
+                class core:
+                    @staticmethod
+                    def version():
+                        return {"version": "Mock Metasploit 6.0.0"}
+                class modules:
+                    @staticmethod
+                    def exploits():
+                        return ["exploit/windows/smb/ms17_010_eternalblue", "exploit/unix/ftp/vsftpd_234_backdoor"]
+                    @staticmethod
+                    def payloads():
+                        return ["windows/meterpreter/reverse_tcp", "linux/x86/meterpreter/reverse_tcp"]
+                class sessions:
+                    @staticmethod
+                    def list():
+                        return {}
+                class jobs:
+                    @staticmethod
+                    def list():
+                        return {}
+            _msf_client_instance = MockMsfClient()
+            logger.info("Using mock Metasploit client for testing")
+            return _msf_client_instance
+        else:
+            logger.error("Metasploit client has not been initialized. Check MSF server connection.")
+            raise ConnectionError("Metasploit client has not been initialized.")
     logger.debug("Retrieved MSF client instance successfully.")
     return _msf_client_instance
 
@@ -1969,19 +1998,6 @@ def find_available_port(start_port, host='127.0.0.1', max_attempts=10):
     return start_port
 
 if __name__ == "__main__":
-    # Initialize MSF Client - Critical for server function
-    try:
-        initialize_msf_client()
-    except (ValueError, ConnectionError, RuntimeError) as e:
-        logger.critical(f"CRITICAL: Failed to initialize Metasploit client on startup: {e}. Server cannot function.")
-        sys.exit(1) # Exit if MSF connection fails at start
-
-    # Initialize OpenRouter Client - Optional for AI features
-    try:
-        initialize_openrouter_client()
-    except Exception as e:
-        logger.warning(f"Failed to initialize OpenRouter client: {e}. AI features will be disabled.")
-
     # --- Setup argument parser for transport mode and server configuration ---
     import argparse
     
@@ -1996,7 +2012,24 @@ if __name__ == "__main__":
     parser.add_argument('--port', type=int, default=None, help='Port to listen on (default: find available from 8085)')
     parser.add_argument('--reload', action='store_true', help='Enable auto-reload (for development)')
     parser.add_argument('--find-port', action='store_true', help='Force finding an available port starting from --port or 8085')
+    parser.add_argument('--mock', action='store_true', help='Run in mock mode without Metasploit (for testing)')
     args = parser.parse_args()
+
+    # Initialize MSF Client - Critical for server function (unless in mock mode)
+    if not args.mock:
+        try:
+            initialize_msf_client()
+        except (ValueError, ConnectionError, RuntimeError) as e:
+            logger.critical(f"CRITICAL: Failed to initialize Metasploit client on startup: {e}. Server cannot function.")
+            sys.exit(1) # Exit if MSF connection fails at start
+    else:
+        logger.info("Running in MOCK mode - Metasploit connection disabled for testing")
+
+    # Initialize OpenRouter Client - Optional for AI features
+    try:
+        initialize_openrouter_client()
+    except Exception as e:
+        logger.warning(f"Failed to initialize OpenRouter client: {e}. AI features will be disabled.")
 
     if args.transport == 'stdio':
         logger.info("Starting MCP server in STDIO transport mode.")
