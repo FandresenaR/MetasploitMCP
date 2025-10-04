@@ -1,12 +1,15 @@
 # Makefile for MetasploitMCP testing and development
 
-.PHONY: help install-deps test test-unit test-integration test-options test-helpers test-tools coverage clean lint format
+.PHONY: help install-deps test test-unit test-integration test-options test-helpers test-tools coverage clean lint format start-msf stop-msf restart-msf
 
 # Default target
 help:
 	@echo "Available targets:"
 	@echo "  help           - Show this help message"
 	@echo "  install-deps   - Install test dependencies"
+	@echo "  start-msf      - Start msfrpcd daemon (from .env.local)"
+	@echo "  stop-msf       - Stop msfrpcd daemon"
+	@echo "  restart-msf    - Restart msfrpcd daemon"
 	@echo "  test           - Run all tests"
 	@echo "  test-unit      - Run unit tests only"
 	@echo "  test-integration - Run integration tests only"
@@ -22,6 +25,17 @@ help:
 # Install test dependencies
 install-deps:
 	python -m pip install -r requirements-test.txt
+
+# Metasploit daemon management
+start-msf:
+	@./start-msfrpcd.sh
+
+stop-msf:
+	@./stop-msfrpcd.sh
+
+restart-msf: stop-msf
+	@sleep 2
+	@./start-msfrpcd.sh
 
 # Test targets
 test:

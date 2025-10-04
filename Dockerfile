@@ -23,5 +23,5 @@ EXPOSE 8080
 
 # Run the application
 # Using 0.0.0.0 to bind to all interfaces (required for Fly.io)
-# Using mock mode since Metasploit framework won't be available in container by default
-CMD ["python", "MetasploitMCP.py", "--transport", "http", "--host", "0.0.0.0", "--port", "8080", "--mock"]
+# Remove --mock flag to connect to external Metasploit (set MSFRPCD_HOST, MSFRPCD_PORT, MSFRPCD_PASSWORD as secrets)
+CMD ["python", "MetasploitMCP.py", "--transport", "http", "--host", "0.0.0.0", "--port", "8080"]
