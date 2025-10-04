@@ -8,17 +8,54 @@ import pytest
 import sys
 import os
 import asyncio
-from unittest.mock import Mock, patch, AsyncMock, MagicMock
+from unittest.mock import patch
+from types import SimpleNamespace
 from typing import Dict, Any
 
 # Add the parent directory to the path to import MetasploitMCP
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # Mock the dependencies that aren't available in test environment
-sys.modules['uvicorn'] = Mock()
-sys.modules['fastapi'] = Mock()
-sys.modules['starlette.applications'] = Mock()
-sys.modules['starlette.routing'] = Mock()
+
+# Use pure Python dummy classes instead of Mock for modules accessed synchronously
+class DummyUvicorn:
+    def __init__(self, *args, **kwargs):
+        pass
+class DummyFastAPI:
+    class FastAPI:
+        def __init__(self, *args, **kwargs):
+            self.routes = []
+        def get(self, *args, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+    class HTTPException(Exception):
+        pass
+    class Request:
+        pass
+    class Response:
+        pass
+sys.modules['fastapi'] = DummyFastAPI()
+class DummyStarletteApplications:
+    class Starlette:
+        def __init__(self, *args, **kwargs):
+            pass
+sys.modules['starlette.applications'] = DummyStarletteApplications()
+class DummyStarletteRouting:
+    class Mount:
+        def __init__(self, *args, **kwargs):
+            pass
+    class Route:
+        def __init__(self, *args, **kwargs):
+            pass
+    class Router:
+        def __init__(self, *args, **kwargs):
+            pass
+sys.modules['starlette.routing'] = DummyStarletteRouting()
+sys.modules['uvicorn'] = DummyUvicorn()
+sys.modules['fastapi'] = DummyFastAPI()
+sys.modules['starlette.applications'] = DummyStarletteApplications()
+sys.modules['starlette.routing'] = DummyStarletteRouting()
 
 # Create a special mock for FastMCP that preserves the tool decorator behavior
 class MockFastMCP:
@@ -32,65 +69,107 @@ class MockFastMCP:
         return decorator
 
 # Mock the MCP modules with our custom FastMCP
-mcp_server_fastmcp = Mock()
-mcp_server_fastmcp.FastMCP = MockFastMCP
-sys.modules['mcp.server.fastmcp'] = mcp_server_fastmcp
-sys.modules['mcp.server.sse'] = Mock()
-sys.modules['mcp.server.session'] = Mock()
+class DummyFastMcpModule:
+    class FastMCP:
+        def __init__(self, *args, **kwargs):
+            pass
+        def tool(self):
+            def decorator(func):
+                return func
+            return decorator
+sys.modules['mcp.server.fastmcp'] = DummyFastMcpModule()
+class DummySse:
+    class SseServerTransport:
+        def __init__(self, *args, **kwargs):
+            pass
+sys.modules['mcp.server.sse'] = DummySse()
+class DummySession:
+    class ServerSession:
+        def __init__(self, *args, **kwargs):
+            pass
+        @staticmethod
+        def _received_request(*args, **kwargs):
+            pass
+sys.modules['mcp.server.session'] = DummySession()
+sys.modules['mcp.server.sse'] = DummySse()
+sys.modules['mcp.server.session'] = DummySession()
 
 # Mock pymetasploit3 module
-sys.modules['pymetasploit3.msfrpc'] = Mock()
+class DummyMsfrpc:
+    pass
+sys.modules['pymetasploit3.msfrpc'] = DummyMsfrpc()
 
 # Create comprehensive mock classes
 class MockMsfRpcClient:
     def __init__(self):
-        self.modules = Mock()
-        self.core = Mock()
-        self.sessions = Mock()
-        self.jobs = Mock()
-        self.consoles = Mock()
-        
-        # Setup default behaviors
-        self.core.version = {'version': '6.3.0'}
-        # These are properties that return lists
-        self.modules.exploits = ['windows/smb/ms17_010_eternalblue', 'unix/ftp/vsftpd_234_backdoor']
-        self.modules.payloads = ['windows/meterpreter/reverse_tcp', 'linux/x86/shell/reverse_tcp']
-        # These are methods that return dicts
-        self.sessions.list = Mock(return_value={})
-        self.jobs.list = Mock(return_value={})
+        class Core:
+            def __init__(self):
+                self.version = {'version': '6.3.0'}
+        class Modules:
+            def __init__(self):
+                self.exploits = ['windows/smb/ms17_010_eternalblue', 'unix/ftp/vsftpd_234_backdoor']
+                self.payloads = ['windows/meterpreter/reverse_tcp', 'linux/x86/shell/reverse_tcp']
+        class Sessions:
+            def __init__(self):
+                self._list = {}
+                self._side_effects = []
+            def list(self):
+                if self._side_effects:
+                    return self._side_effects.pop(0)
+                return self._list
+            def session(self, session_id):
+                return None
+        class Jobs:
+            def __init__(self):
+                self._list = {}
+                self._side_effects = []
+                self._stop_called = []
+            def list(self):
+                if self._side_effects:
+                    return self._side_effects.pop(0)
+                return self._list
+            def stop(self, job_id):
+                self._stop_called.append(job_id)
+                return "stopped"
+        class Consoles:
+            def __init__(self):
+                self._consoles = {}
+            def list(self):
+                return self._consoles
+        self.core = Core()
+        self.modules = Modules()
+        self.sessions = Sessions()
+        self.jobs = Jobs()
+        self.consoles = Consoles()
 
-class MockMsfConsole:
-    def __init__(self, cid='test-console-id'):
-        self.cid = cid
-        self._command_history = []
-        
-    def read(self):
-        return {'data': 'msf6 > ', 'prompt': '\x01\x02msf6\x01\x02 \x01\x02> \x01\x02', 'busy': False}
-        
-    def write(self, command):
-        self._command_history.append(command.strip())
-        return True
-
+# Top-level mock module class
 class MockMsfModule:
     def __init__(self, fullname):
         self.fullname = fullname
         self.options = {}
-        # Create a proper mock for runoptions that supports __setitem__
         self.runoptions = {}
         self.missing_required = []
-        
     def __setitem__(self, key, value):
         self.options[key] = value
-        
     def execute(self, payload=None):
         return {
             'job_id': 1234,
             'uuid': 'test-uuid-123',
             'error': False
         }
-        
     def payload_generate(self):
         return b"test_payload_bytes"
+
+# Top-level mock console class
+class MockMsfConsole:
+    def __init__(self, cid='test-console-id'):
+        self.cid = cid
+        self._command_history = []
+    def read(self):
+        return {'data': 'msf6 > ', 'prompt': '\x01\x02msf6\x01\x02 \x01\x02> \x01\x02', 'busy': False}
+    def write(self, command):
+        self._command_history.append(command.strip())
+        return True
 
 class MockMsfRpcError(Exception):
     pass
@@ -130,14 +209,15 @@ class TestExploitListingTools:
     @pytest.mark.asyncio
     async def test_list_exploits_no_filter(self, mock_client):
         """Test listing exploits without filter."""
-        mock_client.modules.exploits = [
-            'windows/smb/ms17_010_eternalblue',
-            'unix/ftp/vsftpd_234_backdoor',
-            'windows/http/iis_webdav_upload_asp'
-        ]
-        
+        class Modules:
+            exploits = [
+                'windows/smb/ms17_010_eternalblue',
+                'unix/ftp/vsftpd_234_backdoor',
+                'windows/http/iis_webdav_upload_asp'
+            ]
+            payloads = mock_client.modules.payloads
+        mock_client.modules = Modules()
         result = await list_exploits()
-        
         assert isinstance(result, list)
         assert len(result) == 3
         assert 'windows/smb/ms17_010_eternalblue' in result
@@ -145,14 +225,15 @@ class TestExploitListingTools:
     @pytest.mark.asyncio
     async def test_list_exploits_with_filter(self, mock_client):
         """Test listing exploits with search term."""
-        mock_client.modules.exploits = [
-            'windows/smb/ms17_010_eternalblue',
-            'unix/ftp/vsftpd_234_backdoor',
-            'windows/smb/ms08_067_netapi'
-        ]
-        
+        class Modules:
+            exploits = [
+                'windows/smb/ms17_010_eternalblue',
+                'unix/ftp/vsftpd_234_backdoor',
+                'windows/smb/ms08_067_netapi'
+            ]
+            payloads = mock_client.modules.payloads
+        mock_client.modules = Modules()
         result = await list_exploits("smb")
-        
         assert isinstance(result, list)
         assert len(result) == 2
         assert all('smb' in exploit.lower() for exploit in result)
@@ -160,10 +241,13 @@ class TestExploitListingTools:
     @pytest.mark.asyncio
     async def test_list_exploits_error(self, mock_client):
         """Test listing exploits with MSF error."""
-        mock_client.modules.exploits = Mock(side_effect=MockMsfRpcError("Connection failed"))
-        
+        class ExploitError:
+            @property
+            def exploits(self):
+                raise MockMsfRpcError("Connection failed")
+            payloads = mock_client.modules.payloads
+        mock_client.modules = ExploitError()
         result = await list_exploits()
-        
         assert isinstance(result, list)
         assert len(result) == 1
         assert "Error" in result[0]
@@ -171,18 +255,15 @@ class TestExploitListingTools:
     @pytest.mark.asyncio
     async def test_list_exploits_timeout(self, mock_client):
         """Test listing exploits with timeout."""
-        import asyncio
-        
-        def slow_exploits():
-            # Simulate a slow response that would timeout
-            import time
-            time.sleep(35)  # Longer than RPC_CALL_TIMEOUT (30s)
-            return ['exploit1', 'exploit2']
-        
-        mock_client.modules.exploits = slow_exploits
-        
+        import time
+        class SlowExploits:
+            @property
+            def exploits(self):
+                time.sleep(35)
+                return ['exploit1', 'exploit2']
+            payloads = mock_client.modules.payloads
+        mock_client.modules = SlowExploits()
         result = await list_exploits()
-        
         assert isinstance(result, list)
         assert len(result) == 1
         assert "Timeout" in result[0]
@@ -191,28 +272,30 @@ class TestExploitListingTools:
     @pytest.mark.asyncio
     async def test_list_payloads_no_filter(self, mock_client):
         """Test listing payloads without filter."""
-        mock_client.modules.payloads = [
-            'windows/meterpreter/reverse_tcp',
-            'linux/x86/shell/reverse_tcp',
-            'windows/shell/reverse_tcp'
-        ]
-        
+        class Modules:
+            exploits = mock_client.modules.exploits
+            payloads = [
+                'windows/meterpreter/reverse_tcp',
+                'linux/x86/shell/reverse_tcp',
+                'windows/shell/reverse_tcp'
+            ]
+        mock_client.modules = Modules()
         result = await list_payloads()
-        
         assert isinstance(result, list)
         assert len(result) == 3
 
     @pytest.mark.asyncio
     async def test_list_payloads_with_platform_filter(self, mock_client):
         """Test listing payloads with platform filter."""
-        mock_client.modules.payloads = [
-            'windows/meterpreter/reverse_tcp',
-            'linux/x86/shell/reverse_tcp', 
-            'windows/shell/reverse_tcp'
-        ]
-        
+        class Modules:
+            exploits = mock_client.modules.exploits
+            payloads = [
+                'windows/meterpreter/reverse_tcp',
+                'linux/x86/shell/reverse_tcp',
+                'windows/shell/reverse_tcp'
+            ]
+        mock_client.modules = Modules()
         result = await list_payloads(platform="windows")
-        
         assert isinstance(result, list)
         assert len(result) == 2
         assert all('windows' in payload.lower() for payload in result)
@@ -220,14 +303,15 @@ class TestExploitListingTools:
     @pytest.mark.asyncio
     async def test_list_payloads_with_arch_filter(self, mock_client):
         """Test listing payloads with architecture filter."""
-        mock_client.modules.payloads = [
-            'windows/meterpreter/reverse_tcp',
-            'linux/x86/shell/reverse_tcp',
-            'windows/x64/meterpreter/reverse_tcp'
-        ]
-        
+        class Modules:
+            exploits = mock_client.modules.exploits
+            payloads = [
+                'windows/meterpreter/reverse_tcp',
+                'linux/x86/shell/reverse_tcp',
+                'windows/x64/meterpreter/reverse_tcp'
+            ]
+        mock_client.modules = Modules()
         result = await list_payloads(arch="x86")
-        
         assert isinstance(result, list)
         assert len(result) == 1
         assert 'x86' in result[0]
@@ -241,13 +325,18 @@ class TestPayloadGeneration:
         """Fixture providing mocked client and module."""
         client = MockMsfRpcClient()
         module = MockMsfModule('payload/windows/meterpreter/reverse_tcp')
-        
         with patch('MetasploitMCP.get_msf_client', return_value=client):
             with patch('MetasploitMCP._get_module_object', return_value=module):
                 with patch('MetasploitMCP.PAYLOAD_SAVE_DIR', '/tmp/test'):
                     with patch('os.makedirs'):
-                        with patch('builtins.open', create=True) as mock_open:
-                            mock_open.return_value.__enter__.return_value.write = Mock()
+                        class DummyFile:
+                            def write(self, data):
+                                pass
+                            def __enter__(self):
+                                return self
+                            def __exit__(self, exc_type, exc_val, exc_tb):
+                                pass
+                        with patch('builtins.open', create=True, side_effect=lambda *a, **kw: DummyFile()):
                             yield client, module
 
     @pytest.mark.asyncio
@@ -313,29 +402,116 @@ class TestPayloadGeneration:
 
 
 class TestExploitExecution:
+    @pytest.fixture
+    def mock_exploit_environment(self):
+        """Fixture providing mocked exploit environment with pure Python classes."""
+        class DummyConsole:
+            def __init__(self):
+                self._called = False
+            async def __call__(self, *args, **kwargs):
+                self._called = True
+                return {
+                    "status": "success",
+                    "message": "Exploit completed",
+                    "module_output": "session opened"
+                }
+            def assert_called_once(self):
+                assert self._called, "Console was not called"
+            def assert_not_called(self):
+                assert not self._called, "Console was called but shouldn't be"
+        class DummyRpc:
+            def __init__(self):
+                self._called = False
+                self.call_args = None
+            async def __call__(self, *args, **kwargs):
+                self._called = True
+                self.call_args = (args, kwargs)
+                return {
+                    "status": "success",
+                    "job_id": 1234,
+                    "message": "Listener started"
+                }
+            def assert_called_once(self):
+                assert self._called, "RPC was not called"
+            def assert_not_called(self):
+                assert not self._called, "RPC was called but shouldn't be"
+        class DummyJobs:
+            def __init__(self):
+                self._jobs = {}
+                self._stop_calls = []
+            def list(self):
+                return self._jobs
+            def stop(self, job_id):
+                self._stop_calls.append(job_id)
+                return "stopped"
+        class DummyModules:
+            def __init__(self):
+                self.exploits = [
+                    'windows/smb/ms17_010_eternalblue',
+                    'unix/ftp/vsftpd_234_backdoor',
+                    'windows/http/iis_webdav_upload_asp'
+                ]
+                self.payloads = [
+                    'windows/meterpreter/reverse_tcp',
+                    'linux/x86/shell/reverse_tcp',
+                    'windows/shell/reverse_tcp'
+                ]
+        class DummyMsfConsole:
+            def __init__(self):
+                self.cid = 'test-console-id'
+            def read(self):
+                return {'data': 'msf6 > ', 'prompt': 'msf6 > ', 'busy': False}
+            def write(self, cmd):
+                return True
+        class DummyConsoles:
+            def console(self):
+                return DummyMsfConsole()
+        class DummyClient:
+            def __init__(self):
+                self.modules = DummyModules()
+                self.jobs = DummyJobs()
+                self.consoles = DummyConsoles()
+        client = DummyClient()
+        mock_rpc = DummyRpc()
+        mock_console = DummyConsole()
+        with patch('MetasploitMCP.get_msf_client', return_value=client):
+            with patch('MetasploitMCP._execute_module_rpc', mock_rpc):
+                with patch('MetasploitMCP._execute_module_console', mock_console):
+                    yield client, mock_rpc, mock_console
     """Test exploit execution functionality."""
 
     @pytest.fixture
-    def mock_exploit_environment(self):
-        """Fixture providing mocked exploit execution environment."""
+    def mock_job_environment(self):
+        """Fixture providing mocked job management environment."""
         client = MockMsfRpcClient()
-        module = MockMsfModule('exploit/windows/smb/ms17_010_eternalblue')
-        
+        class Jobs:
+            def __init__(self):
+                self._jobs = {}
+                self._stop_calls = []
+            def list(self):
+                return self._jobs
+            def stop(self, job_id):
+                self._stop_calls.append(job_id)
+                return "stopped"
+        jobs = Jobs()
+        client.jobs = jobs
         with patch('MetasploitMCP.get_msf_client', return_value=client):
             with patch('MetasploitMCP._execute_module_rpc') as mock_rpc:
-                with patch('MetasploitMCP._execute_module_console') as mock_console:
-                    mock_rpc.return_value = {
-                        "status": "success",
-                        "message": "Exploit executed",
-                        "job_id": 1234,
-                        "session_id": 5678
-                    }
-                    mock_console.return_value = {
-                        "status": "success", 
-                        "message": "Exploit executed via console",
-                        "module_output": "Session 1 opened"
-                    }
-                    yield client, mock_rpc, mock_console
+                mock_rpc.return_value = {
+                    "status": "success",
+                    "job_id": 1234,
+                    "message": "Listener started"
+                }
+                # Provide a dummy mock_console for tests that expect it
+                class DummyConsole:
+                    def __init__(self):
+                        self._called = False
+                    def __call__(self, *args, **kwargs):
+                        self._called = True
+                    def assert_called_once(self):
+                        assert self._called, "Console was not called"
+                mock_console = DummyConsole()
+                yield client, mock_rpc, mock_console
 
     @pytest.mark.asyncio
     async def test_run_exploit_dict_payload_options(self, mock_exploit_environment):
@@ -414,19 +590,42 @@ class TestSessionManagement:
     def mock_session_environment(self):
         """Fixture providing mocked session management environment."""
         client = MockMsfRpcClient()
-        session = Mock()
-        session.run_with_output = Mock(return_value="command output")
-        session.read = Mock(return_value="session data")
-        session.write = Mock()
-        session.stop = Mock()
-        
-        # Override the default Mock with actual dict return values
-        client.sessions.list = Mock(return_value={
-            "1": {"type": "meterpreter", "info": "Windows session"},
-            "2": {"type": "shell", "info": "Linux session"}
-        })
-        client.sessions.session = Mock(return_value=session)
-        
+        class DummySession:
+            def __init__(self):
+                self._output = "command output"
+                self._data = "session data"
+                self._write_called = False
+                self._stop_called = False
+            def run_with_output(self, cmd):
+                self._run_with_output_called = cmd
+                return self._output
+            def read(self):
+                return self._data
+            def write(self, data):
+                self._write_called = True
+            def stop(self):
+                self._stop_called = True
+            def assert_called_once_with(self, cmd):
+                assert getattr(self, '_run_with_output_called', None) == cmd, f"run_with_output not called with {cmd}"
+            def assert_called_once(self):
+                assert self._stop_called, "stop was not called"
+        session = DummySession()
+        class DummySessions:
+            def __init__(self, session):
+                self._session = session
+                self._list = {
+                    "1": {"type": "meterpreter", "info": "Windows session"},
+                    "2": {"type": "shell", "info": "Linux session"}
+                }
+                self._side_effects = []
+            def list(self):
+                if self._side_effects:
+                    return self._side_effects.pop(0)
+                return self._list
+            def session(self, session_id):
+                return self._session
+        dummy_sessions = DummySessions(session)
+        client.sessions = dummy_sessions
         with patch('MetasploitMCP.get_msf_client', return_value=client):
             yield client, session
 
@@ -450,16 +649,14 @@ class TestSessionManagement:
         result = await send_session_command(1, "sysinfo")
         
         assert result["status"] == "success"
-        session.run_with_output.assert_called_once_with("sysinfo")
+        session.assert_called_once_with("sysinfo")
 
     @pytest.mark.asyncio
     async def test_send_session_command_nonexistent(self, mock_session_environment):
         """Test sending command to non-existent session."""
         client, session = mock_session_environment
-        client.sessions.list.return_value = {}  # No sessions
-        
+        client.sessions._list = {}  # No sessions
         result = await send_session_command(999, "whoami")
-        
         assert result["status"] == "error"
         assert "not found" in result["message"]
 
@@ -469,15 +666,13 @@ class TestSessionManagement:
         client, session = mock_session_environment
         
         # Mock session disappearing after termination
-        client.sessions.list.side_effect = [
+        client.sessions._side_effects = [
             {"1": {"type": "meterpreter"}},  # Before termination
             {}  # After termination
         ]
-        
         result = await terminate_session(1)
-        
         assert result["status"] == "success"
-        session.stop.assert_called_once()
+        session.assert_called_once()
 
 
 class TestListenerManagement:
@@ -488,10 +683,22 @@ class TestListenerManagement:
         """Fixture providing mocked job management environment."""
         client = MockMsfRpcClient()
         
-        # Override the default Mock with actual dict return values
-        client.jobs.list = Mock(return_value={})
-        client.jobs.stop = Mock(return_value="stopped")
-        
+        class DummyJobs:
+            def __init__(self):
+                self._jobs = {}
+                self._stop_called = []
+                self._list_side_effects = []
+            def list(self):
+                if self._list_side_effects:
+                    return self._list_side_effects.pop(0)
+                return self._jobs
+            def stop(self, job_id):
+                self._stop_called.append(job_id)
+                return "stopped"
+            def assert_called_once_with(self, job_id):
+                assert self._stop_called == [job_id], f"stop not called with {job_id}"
+        jobs = DummyJobs()
+        client.jobs = jobs
         with patch('MetasploitMCP.get_msf_client', return_value=client):
             with patch('MetasploitMCP._execute_module_rpc') as mock_rpc:
                 mock_rpc.return_value = {
@@ -555,16 +762,13 @@ class TestListenerManagement:
         client, mock_rpc = mock_job_environment
         
         # Mock job exists before stop, gone after stop
-        client.jobs.list.side_effect = [
+        client.jobs._list_side_effects = [
             {"1234": {"name": "Handler Job"}},  # Before stop
             {}  # After stop  
         ]
-        client.jobs.stop.return_value = "stopped"
-        
         result = await stop_job(1234)
-        
         assert result["status"] == "success"
-        client.jobs.stop.assert_called_once_with("1234")
+        assert client.jobs._stop_called == ["1234"]
 
 
 if __name__ == "__main__":

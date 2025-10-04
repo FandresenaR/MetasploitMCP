@@ -604,7 +604,7 @@ async def _execute_module_rpc(
             if module_type == 'exploit' and 'handler' in full_module_path:
                  # Check jobs list for a match based on payload/lhost/lport
                  await asyncio.sleep(1.0)
-                 jobs_list = await asyncio.to_thread(lambda: client.jobs.list)
+                 jobs_list = await asyncio.to_thread(lambda: client.jobs.list())
                  for jid, jinfo in jobs_list.items():
                      if isinstance(jinfo, dict) and jinfo.get('name','').endswith('Handler') and \
                         jinfo.get('datastore',{}).get('LHOST') == module_options.get('LHOST') and \
@@ -622,7 +622,7 @@ async def _execute_module_rpc(
              logger.info(f"Exploit job {job_id} (UUID: {uuid}) started. Polling for session (timeout: {EXPLOIT_SESSION_POLL_TIMEOUT}s)...")
              while (asyncio.get_event_loop().time() - start_time) < EXPLOIT_SESSION_POLL_TIMEOUT:
                  try:
-                     sessions_list = await asyncio.to_thread(lambda: client.sessions.list)
+                     sessions_list = await asyncio.to_thread(lambda: client.sessions.list())
                      for s_id, s_info in sessions_list.items():
                          # Ensure comparison is robust (uuid might be str or bytes, info dict keys too)
                          s_id_str = str(s_id)
@@ -1185,7 +1185,7 @@ async def run_post_module(
     # Add basic session validation before running
     client = get_msf_client()
     try:
-        current_sessions = await asyncio.to_thread(lambda: client.sessions.list)
+        current_sessions = await asyncio.to_thread(lambda: client.sessions.list())
         if str(session_id) not in current_sessions:
              logger.error(f"Session {session_id} not found for post module {module_name}.")
              return {"status": "error", "message": f"Session {session_id} not found.", "module": module_name}
@@ -1287,7 +1287,7 @@ async def list_active_sessions() -> Dict[str, Any]:
     try:
         logger.debug(f"Calling client.sessions.list with {RPC_CALL_TIMEOUT}s timeout...")
         sessions_dict = await asyncio.wait_for(
-            asyncio.to_thread(lambda: client.sessions.list),
+            asyncio.to_thread(lambda: client.sessions.list()),
             timeout=RPC_CALL_TIMEOUT
         )
         if not isinstance(sessions_dict, dict):
@@ -1337,7 +1337,7 @@ async def send_session_command(
 
     try:
         # --- Get Session Info and Object ---
-        current_sessions = await asyncio.to_thread(lambda: client.sessions.list)
+        current_sessions = await asyncio.to_thread(lambda: client.sessions.list())
         if session_id_str not in current_sessions:
             logger.error(f"Session {session_id} not found.")
             return {"status": "error", "message": f"Session {session_id} not found."}
@@ -1489,7 +1489,7 @@ async def list_listeners() -> Dict[str, Any]:
     try:
         logger.debug(f"Calling client.jobs.list with {RPC_CALL_TIMEOUT}s timeout...")
         jobs = await asyncio.wait_for(
-            asyncio.to_thread(lambda: client.jobs.list),
+            asyncio.to_thread(lambda: client.jobs.list()),
             timeout=RPC_CALL_TIMEOUT
         )
         if not isinstance(jobs, dict):
@@ -1619,7 +1619,7 @@ async def stop_job(job_id: int) -> Dict[str, Any]:
 
     try:
         # Check if job exists and get name
-        jobs_before = await asyncio.to_thread(lambda: client.jobs.list)
+        jobs_before = await asyncio.to_thread(lambda: client.jobs.list())
         if job_id_str not in jobs_before:
             logger.error(f"Job {job_id} not found, cannot stop.")
             return {"status": "error", "message": f"Job {job_id} not found."}
@@ -1633,7 +1633,7 @@ async def stop_job(job_id: int) -> Dict[str, Any]:
 
         # Verify job stopped by checking list again
         await asyncio.sleep(1.0) # Give MSF time to process stop
-        jobs_after = await asyncio.to_thread(lambda: client.jobs.list)
+        jobs_after = await asyncio.to_thread(lambda: client.jobs.list())
         job_stopped = job_id_str not in jobs_after
 
         if job_stopped:
@@ -1680,7 +1680,7 @@ async def terminate_session(session_id: int) -> Dict[str, Any]:
     
     try:
         # Check if session exists
-        current_sessions = await asyncio.to_thread(lambda: client.sessions.list)
+        current_sessions = await asyncio.to_thread(lambda: client.sessions.list())
         if session_id_str not in current_sessions:
             logger.error(f"Session {session_id} not found.")
             return {"status": "error", "message": f"Session {session_id} not found."}
@@ -1693,7 +1693,7 @@ async def terminate_session(session_id: int) -> Dict[str, Any]:
         
         # Verify termination
         await asyncio.sleep(1.0)  # Give MSF time to process termination
-        current_sessions_after = await asyncio.to_thread(lambda: client.sessions.list)
+        current_sessions_after = await asyncio.to_thread(lambda: client.sessions.list())
         
         if session_id_str not in current_sessions_after:
             logger.info(f"Successfully terminated session {session_id}")

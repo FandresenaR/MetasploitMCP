@@ -6,17 +6,20 @@ Pytest configuration and shared fixtures for MetasploitMCP tests.
 import pytest
 import sys
 import os
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.dirname(__file__))
 
 def pytest_configure(config):
     """Configure pytest with custom settings."""
-    # Mock external dependencies that might not be available
-    mock_modules = [
+    # Dummy classes for external dependencies
+    class Dummy:
+        def __init__(self, *args, **kwargs):
+            pass
+    dummy_modules = [
         'uvicorn',
-        'fastapi', 
+        'fastapi',
         'mcp.server.fastmcp',
         'mcp.server.sse',
         'pymetasploit3.msfrpc',
@@ -24,10 +27,9 @@ def pytest_configure(config):
         'starlette.routing',
         'mcp.server.session'
     ]
-    
-    for module in mock_modules:
+    for module in dummy_modules:
         if module not in sys.modules:
-            sys.modules[module] = Mock()
+            sys.modules[module] = Dummy()
 
 def pytest_collection_modifyitems(config, items):
     """Modify test collection to add markers automatically."""
@@ -52,20 +54,33 @@ def pytest_collection_modifyitems(config, items):
 def mock_msf_environment():
     """Session-scoped fixture that provides a complete mock MSF environment."""
     
+    class Modules:
+        def __init__(self):
+            self.exploits = []
+            self.payloads = []
+    class Core:
+        def __init__(self):
+            self.version = {'version': '6.3.0'}
+    class Sessions:
+        def __init__(self):
+            self._list = {}
+        def list(self):
+            return self._list
+    class Jobs:
+        def __init__(self):
+            self._list = {}
+        def list(self):
+            return self._list
+    class Consoles:
+        def __init__(self):
+            pass
     class MockMsfRpcClient:
         def __init__(self):
-            self.modules = Mock()
-            self.core = Mock()
-            self.sessions = Mock()
-            self.jobs = Mock()
-            self.consoles = Mock()
-            
-            # Default return values
-            self.core.version = {'version': '6.3.0'}
-            self.modules.exploits = []
-            self.modules.payloads = []
-            self.sessions.list.return_value = {}
-            self.jobs.list.return_value = {}
+            self.modules = Modules()
+            self.core = Core()
+            self.sessions = Sessions()
+            self.jobs = Jobs()
+            self.consoles = Consoles()
     
     class MockMsfConsole:
         def __init__(self, cid='test-console'):
@@ -80,17 +95,15 @@ def mock_msf_environment():
     class MockMsfRpcError(Exception):
         pass
     
-    # Apply mocks
-    with patch.dict('sys.modules', {
-        'pymetasploit3.msfrpc': Mock(
-            MsfRpcClient=MockMsfRpcClient,
-            MsfConsole=MockMsfConsole,
-            MsfRpcError=MockMsfRpcError
-        )
-    }):
+    # Apply dummy module
+    class DummyMsfrpc:
+        MsfRpcClient = MockMsfRpcClient
+        MsfConsole = MockMsfConsole
+        MsfRpcError = MockMsfRpcError
+    with patch.dict('sys.modules', {'pymetasploit3.msfrpc': DummyMsfrpc}):
         yield {
             'client_class': MockMsfRpcClient,
-            'console_class': MockMsfConsole, 
+            'console_class': MockMsfConsole,
             'error_class': MockMsfRpcError
         }
 
