@@ -6,6 +6,12 @@ set -e
 echo "🚀 MetasploitMCP Fly.io Deployment Script"
 echo "=========================================="
 
+# Add flyctl to PATH if it exists in the standard location
+if [ -d "$HOME/.fly/bin" ]; then
+    export FLYCTL_INSTALL="$HOME/.fly"
+    export PATH="$FLYCTL_INSTALL/bin:$PATH"
+fi
+
 # Check if flyctl is installed
 if ! command -v flyctl &> /dev/null; then
     echo "❌ flyctl is not installed."
