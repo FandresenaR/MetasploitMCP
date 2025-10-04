@@ -1,11 +1,15 @@
-# fly.toml app configuration file generated for MetasploitMCP
+# fly.toml app configuration file generated for metasploit-mcp on 2025-10-04T16:30:43-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
 app = 'metasploit-mcp'
 primary_region = 'iad'
 
 [build]
+
+[env]
+  PORT = '8080'
 
 [http_service]
   internal_port = 8080
@@ -24,6 +28,3 @@ primary_region = 'iad'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-
-[env]
-  PORT = '8080'
