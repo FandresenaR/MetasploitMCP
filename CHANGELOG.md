@@ -11,6 +11,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive project documentation cleanup
 - CHANGELOG.md for tracking project changes
 - Detailed Oracle Cloud deployment considerations in README
+- **MCP_INTEGRATION_GUIDE.md** - Complete guide for making MetasploitMCP available to all AI projects:
+  - MCP Registry submission process
+  - NPM package distribution
+  - Docker Hub publishing
+  - Integration examples for Claude, Copilot, LangChain, AutoGPT
+  - Public API deployment considerations
+  - Security best practices for public deployment
+  - Complete checklist and roadmap
+- **mcp.json** - MCP manifest file for registry submission
+- **SECURITY.md** - Comprehensive security policy:
+  - Authorization and legal compliance requirements
+  - Network isolation guidelines
+  - Authentication best practices
+  - API security recommendations
+  - Payload handling procedures
+  - Session management guidelines
+  - Audit logging requirements
+  - Vulnerability reporting process
+- **QUICK_START_CONFIG.md** - Ready-to-use configuration examples:
+  - Claude Desktop configs (Windows/macOS/Linux)
+  - VS Code MCP extension setup
+  - Remote server configurations
+  - Public API connection examples
+  - Step-by-step installation guide
 - **BEGINNER_GUIDE.md** - Complete beginner-friendly guide covering:
   - All project functionality explained simply
   - Connected systems and architecture diagrams

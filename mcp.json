@@ -1,0 +1,161 @@
+{
+  "name": "metasploit-mcp",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Metasploit Framework integration. Provides AI assistants with access to 2,565+ exploits, 1,675+ payloads, and complete penetration testing capabilities through natural language.",
+  "author": "FandresenaR",
+  "homepage": "https://github.com/FandresenaR/MetasploitMCP",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FandresenaR/MetasploitMCP.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FandresenaR/MetasploitMCP/issues"
+  },
+  "capabilities": {
+    "tools": [
+      {
+        "name": "list_exploits",
+        "description": "Search and list available Metasploit exploit modules"
+      },
+      {
+        "name": "list_payloads",
+        "description": "Search and list available Metasploit payload modules with platform/architecture filtering"
+      },
+      {
+        "name": "run_exploit",
+        "description": "Configure and execute an exploit against a target with vulnerability checking"
+      },
+      {
+        "name": "run_auxiliary_module",
+        "description": "Run Metasploit auxiliary modules (scanners, fuzzers, etc.)"
+      },
+      {
+        "name": "run_post_module",
+        "description": "Execute post-exploitation modules against existing sessions"
+      },
+      {
+        "name": "generate_payload",
+        "description": "Generate executable payload files using Metasploit's payload generator"
+      },
+      {
+        "name": "list_active_sessions",
+        "description": "Display all currently active Metasploit sessions with detailed information"
+      },
+      {
+        "name": "send_session_command",
+        "description": "Execute commands in active Meterpreter or Shell sessions"
+      },
+      {
+        "name": "terminate_session",
+        "description": "Forcefully close and terminate an active session"
+      },
+      {
+        "name": "list_listeners",
+        "description": "Display all active handlers and background jobs"
+      },
+      {
+        "name": "start_listener",
+        "description": "Create and start a new multi/handler to receive connections"
+      },
+      {
+        "name": "stop_job",
+        "description": "Stop a running Metasploit job or handler"
+      },
+      {
+        "name": "analyze_exploit_with_ai",
+        "description": "Use AI to analyze exploits and provide detailed technical insights"
+      },
+      {
+        "name": "generate_metasploit_commands_with_ai",
+        "description": "Generate step-by-step Metasploit commands from natural language"
+      },
+      {
+        "name": "analyze_vulnerability_with_ai",
+        "description": "Analyze vulnerabilities and suggest exploitation approaches"
+      }
+    ],
+    "resources": [],
+    "prompts": []
+  },
+  "transport": ["stdio", "http"],
+  "runtime": {
+    "python": ">=3.10",
+    "dependencies": [
+      "fastapi",
+      "uvicorn",
+      "pymetasploit3",
+      "python-dotenv",
+      "openai",
+      "fastmcp"
+    ]
+  },
+  "configuration": {
+    "required": [
+      {
+        "name": "MSF_SERVER",
+        "description": "Metasploit RPC server IP address"
+      },
+      {
+        "name": "MSF_PASSWORD",
+        "description": "Password for msfrpcd authentication"
+      }
+    ],
+    "optional": [
+      {
+        "name": "MSF_PORT",
+        "description": "Metasploit RPC server port (default: 55553)"
+      },
+      {
+        "name": "MSF_SSL",
+        "description": "Use SSL for RPC connection (default: true)"
+      },
+      {
+        "name": "OPENROUTER_API_KEY",
+        "description": "OpenRouter API key for AI-powered analysis features"
+      },
+      {
+        "name": "PAYLOAD_SAVE_DIR",
+        "description": "Directory to save generated payloads (default: ~/payloads)"
+      }
+    ]
+  },
+  "features": [
+    "Module Discovery: Search 2,565+ exploits and 1,675+ payloads",
+    "Exploitation: Run exploits, auxiliary modules, and post-exploitation",
+    "Payload Generation: Create executable payloads in multiple formats",
+    "Session Management: Control and interact with active sessions",
+    "Handler Management: Manage listeners and background jobs",
+    "AI Analysis: OpenRouter-powered exploit and vulnerability analysis"
+  ],
+  "keywords": [
+    "metasploit",
+    "security",
+    "penetration-testing",
+    "exploit",
+    "cybersecurity",
+    "mcp",
+    "ai-tools",
+    "vulnerability-assessment",
+    "red-team",
+    "infosec"
+  ],
+  "category": "security",
+  "tags": [
+    "metasploit",
+    "penetration-testing",
+    "security",
+    "exploit",
+    "vulnerability"
+  ],
+  "documentation": {
+    "readme": "https://github.com/FandresenaR/MetasploitMCP#readme",
+    "tools_reference": "https://github.com/FandresenaR/MetasploitMCP/blob/main/TOOLS.md",
+    "beginner_guide": "https://github.com/FandresenaR/MetasploitMCP/blob/main/BEGINNER_GUIDE.md",
+    "api_docs": "https://metasploit-mcp.fly.dev/docs"
+  },
+  "demo": {
+    "api_url": "https://metasploit-mcp.fly.dev",
+    "sse_endpoint": "https://metasploit-mcp.fly.dev/sse"
+  }
+}

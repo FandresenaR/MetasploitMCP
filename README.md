@@ -25,10 +25,13 @@ This MCP server provides a bridge between large language models like Claude and 
 
 - 🎓 **[Beginner's Guide](BEGINNER_GUIDE.md)** - Complete introduction for newcomers
 - 🛠️ **[Tools Reference](TOOLS.md)** - Detailed documentation of all 13 tools
+- 🤖 **[MCP Integration Guide](MCP_INTEGRATION_GUIDE.md)** - Make available for all AI projects
+- ⚡ **[Quick Start Configs](QUICK_START_CONFIG.md)** - Ready-to-use configuration examples
 - 📋 **[Changelog](CHANGELOG.md)** - Version history and updates
 - 🚀 **[Deployment Guide](DEPLOYMENT.md)** - Fly.io deployment instructions
 - ⚙️ **[Setup Verification](SETUP_VERIFICATION.md)** - Production deployment report
 - 🔧 **[msfrpcd Management](MSFRPCD_MANAGEMENT.md)** - Daemon management guide
+- 🔒 **[Security Policy](SECURITY.md)** - Security considerations and best practices
 
 ## Features
 
@@ -169,6 +172,19 @@ Additional options for HTTP mode:
 ```bash
 python MetasploitMCP.py --transport http --host 0.0.0.0 --port 8085
 ```
+
+## Making Available for All AI Projects
+
+MetasploitMCP can be integrated with any MCP-compatible AI assistant. See the comprehensive **[MCP Integration Guide](MCP_INTEGRATION_GUIDE.md)** for:
+
+- 📦 Publishing to MCP Registry
+- 📘 NPM Package Distribution
+- 🐳 Docker Hub Publishing
+- 🔗 Integration with Claude, Copilot, LangChain, AutoGPT, and more
+- 🔒 Security best practices for public deployment
+- ✅ Complete checklist for making your server discoverable
+
+For quick configuration examples, see **[Quick Start Configs](QUICK_START_CONFIG.md)**.
 
 ### Claude Desktop Integration
 
