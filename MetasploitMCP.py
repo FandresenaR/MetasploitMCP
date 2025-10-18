@@ -1954,6 +1954,13 @@ async def health_check():
     """Check connectivity to the Metasploit RPC service."""
     try:
         client = get_msf_client() # Will raise ConnectionError if not init
+        
+        # Check if we're in mock mode
+        import sys
+        if '--mock' in sys.argv:
+            logger.info("Health check in MOCK mode - skipping MSF RPC call")
+            return {"status": "ok", "msf_version": "Mock Metasploit 6.0.0", "mode": "mock"}
+        
         logger.debug(f"Executing health check MSF call (core.version) with {RPC_CALL_TIMEOUT}s timeout...")
         # Use a lightweight call like core.version
         version_info = await asyncio.wait_for(
