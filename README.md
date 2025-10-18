@@ -1,6 +1,15 @@
 # Metasploit MCP Server
 
+[![Deployed on Fly.io](https://img.shields.io/badge/Deployed%20on-Fly.io-blueviolet?style=flat&logo=fly.io)](https://metasploit-mcp.fly.dev/)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=flat)](https://metasploit-mcp.fly.dev/docs)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
 A Model Context Protocol (MCP) server for Metasploit Framework integration.
+
+> 📝 **Project Updates**: See [CHANGELOG.md](CHANGELOG.md) for version history and recent changes.
+
+**🌐 Live Demo:** [https://metasploit-mcp.fly.dev/](https://metasploit-mcp.fly.dev/)  
+**📚 API Docs:** [https://metasploit-mcp.fly.dev/docs](https://metasploit-mcp.fly.dev/docs)
 
 
 https://github.com/user-attachments/assets/39b19fb5-8397-4ccd-b896-d1797ec185e1
@@ -396,6 +405,264 @@ You can also set this in your `.env.local` file:
 ```
 PAYLOAD_SAVE_DIR=/custom/path/to/payloads
 ```
+
+## Deployment
+
+### Fly.io Deployment (Production)
+
+The MetasploitMCP server is currently deployed on Fly.io at **https://metasploit-mcp.fly.dev/**
+
+#### Quick Deployment to Fly.io
+
+1. **Install Fly CLI**:
+   ```bash
+   curl -L https://fly.io/install.sh | sh
+   ```
+
+2. **Login to Fly.io**:
+   ```bash
+   flyctl auth login
+   ```
+
+3. **Launch your app**:
+   ```bash
+   flyctl launch --no-deploy
+   ```
+   - Choose a unique app name
+   - Select a region close to your users
+   - Skip database setup (not required)
+
+4. **Set environment secrets** (optional):
+   ```bash
+   flyctl secrets set MSFRPCD_PASSWORD=your_secure_password
+   flyctl secrets set OPENROUTER_API_KEY=your_api_key
+   ```
+
+5. **Deploy**:
+   ```bash
+   flyctl deploy
+   ```
+
+#### Fly.io Configuration
+
+The included `fly.toml` configuration provides:
+- **Auto-scaling**: Machines stop when idle (cost-efficient)
+- **HTTPS**: Automatically enabled
+- **Memory**: 1GB RAM (adjustable)
+- **Region**: Ashburn, Virginia (iad) - configurable
+- **Mock Mode**: Runs without Metasploit Framework by default
+
+#### Connecting to External Metasploit
+
+To connect your Fly.io deployment to a Metasploit instance:
+
+**Option 1: Via Tunnel (Development)**
+```bash
+# Expose your local msfrpcd with ngrok
+ngrok tcp 55553
+
+# Configure Fly.io with tunnel URL
+flyctl secrets set MSFRPCD_HOST="0.tcp.ngrok.io"
+flyctl secrets set MSFRPCD_PORT="12345"  # Use port from ngrok
+flyctl secrets set MSFRPCD_PASSWORD="your_password"
+```
+
+**Option 2: VPS/Cloud Server (Production)**
+```bash
+# Configure with your VPS IP
+flyctl secrets set MSFRPCD_HOST="your.vps.ip"
+flyctl secrets set MSFRPCD_PORT="55553"
+flyctl secrets set MSFRPCD_PASSWORD="your_password"
+```
+
+#### Fly.io Management Commands
+
+```bash
+# View app status
+flyctl status
+
+# View logs in real-time
+flyctl logs
+
+# Scale resources
+flyctl scale memory 2048  # Increase to 2GB
+flyctl scale count 2      # Add more machines
+
+# SSH into machine
+flyctl ssh console
+
+# Open app in browser
+flyctl open
+```
+
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+### Oracle Cloud Deployment
+
+MetasploitMCP can also be deployed on Oracle Cloud Infrastructure (OCI), which offers generous free tier resources.
+
+#### Oracle Cloud Free Tier Benefits
+
+- **Always Free VMs**: 2 AMD-based Compute VMs with 1/8 OCPU and 1 GB memory each
+- **Ampere A1 Compute**: 4 OCPUs and 24 GB memory (can be split into 4 VMs)
+- **Block Volumes**: 200 GB total of block volume storage
+- **Networking**: 10 TB outbound data transfer per month
+- **Load Balancer**: 1 flexible load balancer (10 Mbps)
+
+#### Deployment Options on Oracle Cloud
+
+**Option 1: Docker Container on Compute Instance**
+
+1. **Create a Compute Instance** (Always Free eligible):
+   - OS: Ubuntu 22.04 or Oracle Linux 8
+   - Shape: VM.Standard.E2.1.Micro or VM.Standard.A1.Flex
+   - Configure networking and security lists
+
+2. **Install Docker**:
+   ```bash
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   sudo sh get-docker.sh
+   sudo usermod -aG docker $USER
+   ```
+
+3. **Clone and run**:
+   ```bash
+   git clone https://github.com/FandresenaR/MetasploitMCP.git
+   cd MetasploitMCP
+   
+   # Build Docker image
+   docker build -t metasploit-mcp .
+   
+   # Run container
+   docker run -d -p 8080:8080 \
+     -e MSFRPCD_PASSWORD=your_password \
+     -e OPENROUTER_API_KEY=your_api_key \
+     --name metasploit-mcp \
+     metasploit-mcp
+   ```
+
+4. **Configure firewall**:
+   ```bash
+   # Open port 8080
+   sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 8080 -j ACCEPT
+   sudo netfilter-persistent save
+   ```
+
+5. **Configure OCI Security List**:
+   - Add ingress rule for port 8080 (TCP)
+   - Optionally configure a Load Balancer with SSL termination
+
+**Option 2: Oracle Container Instances**
+
+1. **Push image to Oracle Container Registry (OCIR)**:
+   ```bash
+   docker tag metasploit-mcp <region>.ocir.io/<tenancy-namespace>/metasploit-mcp:latest
+   docker push <region>.ocir.io/<tenancy-namespace>/metasploit-mcp:latest
+   ```
+
+2. **Create Container Instance** via OCI Console:
+   - Select your image from OCIR
+   - Configure environment variables (secrets)
+   - Set up networking and security
+
+**Option 3: Kubernetes on OKE (Container Engine for Kubernetes)**
+
+For production workloads requiring high availability:
+
+1. **Create OKE cluster** (requires paid resources or use free tier creatively)
+2. **Deploy with Kubernetes manifests**:
+   ```yaml
+   apiVersion: apps/v1
+   kind: Deployment
+   metadata:
+     name: metasploit-mcp
+   spec:
+     replicas: 2
+     selector:
+       matchLabels:
+         app: metasploit-mcp
+     template:
+       metadata:
+         labels:
+           app: metasploit-mcp
+       spec:
+         containers:
+         - name: metasploit-mcp
+           image: <your-image>
+           ports:
+           - containerPort: 8080
+           env:
+           - name: MSFRPCD_PASSWORD
+             valueFrom:
+               secretKeyRef:
+                 name: msf-secrets
+                 key: password
+   ```
+
+#### Oracle Cloud Considerations
+
+**Pros:**
+- Generous free tier with good resources
+- Persistent compute instances
+- Full control over the environment
+- Can install Metasploit Framework directly
+- No cold starts (unlike Fly.io auto-stop)
+
+**Cons:**
+- More manual configuration required
+- You manage OS updates and security
+- No automatic HTTPS (need to configure)
+- Manual scaling
+
+**Cost Comparison:**
+- **Fly.io**: ~$5-10/month, auto-scaling, managed infrastructure
+- **Oracle Cloud**: Free tier available, but you manage everything
+
+#### Securing Oracle Cloud Deployment
+
+1. **Use Oracle Vault** for secrets management
+2. **Configure Security Lists** to restrict access
+3. **Enable OS firewall** (iptables/firewalld)
+4. **Use Oracle Load Balancer** with SSL certificates
+5. **Set up monitoring** with OCI Monitoring service
+6. **Regular updates**: `sudo apt update && sudo apt upgrade`
+
+#### Recommended Architecture on Oracle Cloud
+
+```
+Internet
+    ↓
+[Load Balancer with SSL]
+    ↓
+[Security List / WAF]
+    ↓
+[Compute Instance - MetasploitMCP]
+    ↓
+[Metasploit Framework (optional)]
+```
+
+For a production setup, consider:
+- **Load Balancer**: For SSL termination and multiple instances
+- **Object Storage**: For payload file storage
+- **OCI Vault**: For secrets management
+- **Monitoring & Logging**: OCI native services
+
+### Deployment Comparison
+
+| Feature | Fly.io | Oracle Cloud |
+|---------|--------|--------------|
+| **Setup Time** | 5 minutes | 30+ minutes |
+| **Cost (Minimal Usage)** | ~$5-10/month | Free tier available |
+| **Auto-scaling** | ✅ Built-in | ❌ Manual |
+| **HTTPS** | ✅ Automatic | ❌ Manual setup |
+| **Maintenance** | ✅ Managed | ❌ You manage |
+| **Cold Starts** | ✅ Yes (auto-stop) | ❌ Always running |
+| **Full Metasploit** | ⚠️ Complex | ✅ Easy to install |
+| **Control** | ⚠️ Limited | ✅ Full control |
+
+**Recommendation:**
+- **Fly.io**: Best for quick demos, development, and testing
+- **Oracle Cloud**: Best for production, long-running instances, and full Metasploit integration
 
 ## License
 
