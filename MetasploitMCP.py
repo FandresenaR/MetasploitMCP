@@ -1951,7 +1951,10 @@ class MessagesEndpoint:
 @app.get("/", tags=["Health"])
 @app.get("/healthz", tags=["Health"])
 async def health_check():
-    """Check connectivity to the Metasploit RPC service."""
+    """
+    Check connectivity to the Metasploit RPC service.
+    Returns 200 OK even if MSF is unavailable (graceful degradation).
+    """
     try:
         client = get_msf_client() # Will raise ConnectionError if not init
         
@@ -1969,17 +1972,39 @@ async def health_check():
         )
         msf_version = version_info.get('version', 'N/A') if isinstance(version_info, dict) else 'N/A'
         logger.info(f"Health check successful. MSF Version: {msf_version}")
-        return {"status": "ok", "msf_version": msf_version}
+        return {"status": "ok", "msf_version": msf_version, "msf_available": True}
     except asyncio.TimeoutError:
-        error_msg = f"Health check timeout ({RPC_CALL_TIMEOUT}s) - Metasploit server is not responding"
-        logger.error(error_msg)
-        raise HTTPException(status_code=503, detail=error_msg)
+        error_msg = f"Metasploit server timeout ({RPC_CALL_TIMEOUT}s)"
+        logger.warning(f"Health check warning: {error_msg}")
+        # Return 200 OK but indicate MSF is unavailable
+        return {
+            "status": "degraded",
+            "message": error_msg,
+            "msf_available": False,
+            "server_healthy": True,
+            "note": "MCP server is operational but Metasploit backend is not responding"
+        }
     except (MsfRpcError, ConnectionError) as e:
-        logger.error(f"Health check failed - MSF RPC connection error: {e}")
-        raise HTTPException(status_code=503, detail=f"Metasploit Service Unavailable: {e}")
+        error_msg = f"Metasploit connection error: {str(e)}"
+        logger.warning(f"Health check warning: {error_msg}")
+        # Return 200 OK but indicate MSF is unavailable
+        return {
+            "status": "degraded",
+            "message": error_msg,
+            "msf_available": False,
+            "server_healthy": True,
+            "note": "MCP server is operational but Metasploit backend is unavailable"
+        }
     except Exception as e:
         logger.exception("Unexpected error during health check.")
-        raise HTTPException(status_code=500, detail=f"Internal Server Error during health check: {e}")
+        # Even on unexpected errors, return 200 to keep service running
+        return {
+            "status": "degraded",
+            "message": f"Unexpected error: {str(e)}",
+            "msf_available": False,
+            "server_healthy": True,
+            "note": "MCP server is operational but health check encountered an error"
+        }
 
 # --- Mount MCP Router AFTER defining FastAPI routes ---
 # Create routes using the ASGIApp-compliant classes
