@@ -1956,6 +1956,7 @@ mcp_router = Router([
 # Mount the MCP router to the main app
 app.routes.append(Mount("/", app=mcp_router))
 
+@app.get("/", tags=["Health"])
 @app.get("/healthz", tags=["Health"])
 async def health_check():
     """Check connectivity to the Metasploit RPC service."""
