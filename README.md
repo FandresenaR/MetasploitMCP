@@ -6,7 +6,8 @@
 
 A Model Context Protocol (MCP) server for Metasploit Framework integration.
 
-> 📝 **Project Updates**: See [CHANGELOG.md](CHANGELOG.md) for version history and recent changes.
+> 📝 **Project Updates**: See [CHANGELOG.md](CHANGELOG.md) for version history and recent changes.  
+> 🎓 **New to this project?** Check out the [Beginner's Guide](BEGINNER_GUIDE.md) for a comprehensive introduction!
 
 **🌐 Live Demo:** [https://metasploit-mcp.fly.dev/](https://metasploit-mcp.fly.dev/)  
 **📚 API Docs:** [https://metasploit-mcp.fly.dev/docs](https://metasploit-mcp.fly.dev/docs)

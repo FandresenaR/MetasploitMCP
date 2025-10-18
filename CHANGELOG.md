@@ -11,11 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive project documentation cleanup
 - CHANGELOG.md for tracking project changes
 - Detailed Oracle Cloud deployment considerations in README
+- **BEGINNER_GUIDE.md** - Complete beginner-friendly guide covering:
+  - All project functionality explained simply
+  - Connected systems and architecture diagrams
+  - 13 MCP tools with examples
+  - Data flow explanations
+  - Common workflows and use cases
+  - Troubleshooting guide
+  - Step-by-step getting started guide
 
 ### Changed
 - Updated README.md with Fly.io deployment information
 - Consolidated deployment documentation
 - Improved README structure and clarity
+- Added beginner's guide reference in README
 
 ### Removed
 - Redundant temporary documentation files (RESUME_COMPLET.md, DEPLOYMENT_SUCCESS.md, DEPLOYMENT_INFO.md, MSFRPCD_SETUP_COMPLETE.md)
