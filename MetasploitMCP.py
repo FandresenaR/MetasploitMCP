@@ -1947,15 +1947,7 @@ class MessagesEndpoint:
         logger.info(f"Received POST message from {client_host}:{client_port}")
         await sse.handle_post_message(scope, receive, send)
 
-# Create routes using the ASGIApp-compliant classes
-mcp_router = Router([
-    Route("/sse", endpoint=SseEndpoint(), methods=["GET"]),
-    Route("/messages/", endpoint=MessagesEndpoint(), methods=["POST"]),
-])
-
-# Mount the MCP router to the main app
-app.routes.append(Mount("/", app=mcp_router))
-
+# Define FastAPI routes FIRST before mounting MCP router
 @app.get("/", tags=["Health"])
 @app.get("/healthz", tags=["Health"])
 async def health_check():
@@ -1981,6 +1973,16 @@ async def health_check():
     except Exception as e:
         logger.exception("Unexpected error during health check.")
         raise HTTPException(status_code=500, detail=f"Internal Server Error during health check: {e}")
+
+# --- Mount MCP Router AFTER defining FastAPI routes ---
+# Create routes using the ASGIApp-compliant classes
+mcp_router = Router([
+    Route("/sse", endpoint=SseEndpoint(), methods=["GET"]),
+    Route("/messages/", endpoint=MessagesEndpoint(), methods=["POST"]),
+])
+
+# Mount the MCP router under /mcp path to avoid conflicts
+app.mount("/mcp", mcp_router)
 
 # --- Server Startup Logic ---
 
