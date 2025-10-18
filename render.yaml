@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python MetasploitMCP.py --transport http --host 0.0.0.0 --port $PORT --mock
+    startCommand: python MetasploitMCP.py --transport http --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -15,7 +15,7 @@ services:
       - key: MSF_PASSWORD
         sync: false
       - key: MSF_SSL
-        value: true
+        value: false
       - key: OPENROUTER_API_KEY
         sync: false
       - key: OPENROUTER_BASE_URL
