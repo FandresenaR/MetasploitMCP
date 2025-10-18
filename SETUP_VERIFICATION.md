@@ -42,12 +42,12 @@
 
 ### `.env.local`
 ```bash
-MSF_PASSWORD=u+z/PNfVTs17KthxxdFZBPOkU1XGRk6LJdVrG4a2IxE=
-MSF_SERVER=168.110.55.210
+MSF_PASSWORD=your_secure_password_here
+MSF_SERVER=your.metasploit.server.ip
 MSF_PORT=55553
 MSF_SSL=true
-PAYLOAD_SAVE_DIR=/home/twain/Project/MetasploitMCP/payloads
-OPENROUTER_API_KEY=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
+PAYLOAD_SAVE_DIR=/path/to/payloads
+OPENROUTER_API_KEY=your_openrouter_api_key_here
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 OPENROUTER_MODEL=x-ai/grok-4-fast:free
 ```
