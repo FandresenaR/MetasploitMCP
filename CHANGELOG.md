@@ -19,15 +19,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Common workflows and use cases
   - Troubleshooting guide
   - Step-by-step getting started guide
+- **TOOLS.md** - Complete reference guide for all 13 MCP tools:
+  - Detailed documentation for each tool with parameters and examples
+  - Natural language usage examples for AI assistants
+  - Complete usage workflows (4 full examples)
+  - Security best practices and operational guidelines
+  - Comprehensive troubleshooting guide with diagnostic commands
+  - Quick reference tables and categorized tool listing
+- **SETUP_VERIFICATION.md** - Production deployment verification report:
+  - Complete configuration summary (remote server, msfrpcd, MCP server)
+  - Detailed verification tests with actual results
+  - Usage examples with real commands
+  - Maintenance procedures and monitoring commands
+  - Security notes and troubleshooting guide
+- **manage-services.sh** - Service management automation script:
+  - Check status of msfrpcd and MetasploitMCP services
+  - Start/stop/restart operations for both services
+  - Network connectivity testing
+  - Quick health checks and diagnostics
+  - SSH integration for remote msfrpcd management
+- SSH configuration improvements:
+  - Added "metasploit-mcp" alias to ~/.ssh/config
+  - Simplified remote server access with oracle_metasploit_key
 
 ### Changed
 - Updated README.md with Fly.io deployment information
 - Consolidated deployment documentation
 - Improved README structure and clarity
 - Added beginner's guide reference in README
+- Fixed .env.local SSL configuration (MSF_SSL: false → true)
+- Enhanced manage-services.sh to properly detect msfrpcd process (using pgrep -f)
+
+### Fixed
+- msfrpcd SSL configuration mismatch (server uses SSL by default)
+- Service detection in manage-services.sh (Ruby process name vs msfrpcd)
+- Virtual environment setup for Kali Linux (externally-managed Python)
+- Password mismatch between .env.local and running msfrpcd daemon
 
 ### Removed
 - Redundant temporary documentation files (RESUME_COMPLET.md, DEPLOYMENT_SUCCESS.md, DEPLOYMENT_INFO.md, MSFRPCD_SETUP_COMPLETE.md)
+
+### Deployment
+- **Remote Metasploit Server**: Oracle Cloud Ubuntu 22.04 (168.110.55.210)
+- **msfrpcd Status**: Running on port 55553 with SSL (PID: 264782)
+- **MetasploitMCP Server**: Running on port 8085 (PID: 50417)
+- **Available Modules**: 2,565 exploits, 1,675 payloads
+- **Framework Version**: Metasploit 6.4.95-dev, API v1.0
 
 ## [1.0.0] - 2025-10-04
 

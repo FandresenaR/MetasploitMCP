@@ -7,7 +7,8 @@
 A Model Context Protocol (MCP) server for Metasploit Framework integration.
 
 > 📝 **Project Updates**: See [CHANGELOG.md](CHANGELOG.md) for version history and recent changes.  
-> 🎓 **New to this project?** Check out the [Beginner's Guide](BEGINNER_GUIDE.md) for a comprehensive introduction!
+> 🎓 **New to this project?** Check out the [Beginner's Guide](BEGINNER_GUIDE.md) for a comprehensive introduction!  
+> 🛠️ **Tool Reference**: See [TOOLS.md](TOOLS.md) for complete documentation of all 13 MCP tools with examples and best practices.
 
 **🌐 Live Demo:** [https://metasploit-mcp.fly.dev/](https://metasploit-mcp.fly.dev/)  
 **📚 API Docs:** [https://metasploit-mcp.fly.dev/docs](https://metasploit-mcp.fly.dev/docs)
@@ -19,6 +20,15 @@ https://github.com/user-attachments/assets/39b19fb5-8397-4ccd-b896-d1797ec185e1
 ## Description
 
 This MCP server provides a bridge between large language models like Claude and the Metasploit Framework penetration testing platform. It allows AI assistants to dynamically access and control Metasploit functionality through standardized tools, enabling a natural language interface to complex security testing workflows.
+
+### Quick Links
+
+- 🎓 **[Beginner's Guide](BEGINNER_GUIDE.md)** - Complete introduction for newcomers
+- 🛠️ **[Tools Reference](TOOLS.md)** - Detailed documentation of all 13 tools
+- 📋 **[Changelog](CHANGELOG.md)** - Version history and updates
+- 🚀 **[Deployment Guide](DEPLOYMENT.md)** - Fly.io deployment instructions
+- ⚙️ **[Setup Verification](SETUP_VERIFICATION.md)** - Production deployment report
+- 🔧 **[msfrpcd Management](MSFRPCD_MANAGEMENT.md)** - Daemon management guide
 
 ## Features
 
@@ -245,6 +255,8 @@ A cryptographically secure password has been generated for Metasploit RPC access
 2. List active handlers: `list_listeners()`
 3. Generate a payload: `generate_payload("windows/meterpreter/reverse_tcp", "exe", {"LHOST": "192.168.1.10", "LPORT": 4444})`
 4. Stop a handler: `stop_job(1)`
+
+For complete tool documentation with detailed parameters, examples, and best practices, see **[TOOLS.md](TOOLS.md)**.
 
 ## Testing
 
@@ -497,6 +509,32 @@ flyctl open
 ```
 
 For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+### Production Deployment Verification
+
+This project includes comprehensive setup verification tools and documentation:
+
+- **[SETUP_VERIFICATION.md](SETUP_VERIFICATION.md)** - Complete verification report with:
+  - Configuration summary (remote server, msfrpcd, MCP server)
+  - All verification tests with actual results
+  - Usage examples and maintenance commands
+  - Security notes and troubleshooting guide
+
+- **[manage-services.sh](manage-services.sh)** - Service management script:
+  ```bash
+  # Check status of all services
+  ./manage-services.sh status
+  
+  # Start/stop/restart services
+  ./manage-services.sh start
+  ./manage-services.sh stop
+  ./manage-services.sh restart
+  
+  # Test connectivity
+  ./manage-services.sh test
+  ```
+
+For step-by-step setup and verification of a production MetasploitMCP deployment, refer to these resources.
 
 ### Oracle Cloud Deployment
 
