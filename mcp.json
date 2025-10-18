@@ -152,10 +152,13 @@
     "readme": "https://github.com/FandresenaR/MetasploitMCP#readme",
     "tools_reference": "https://github.com/FandresenaR/MetasploitMCP/blob/main/TOOLS.md",
     "beginner_guide": "https://github.com/FandresenaR/MetasploitMCP/blob/main/BEGINNER_GUIDE.md",
-    "api_docs": "https://metasploit-mcp.fly.dev/docs"
+    "render_deployment": "https://github.com/FandresenaR/MetasploitMCP/blob/main/RENDER_DEPLOYMENT.md",
+    "api_docs": "https://metasploitmcp.onrender.com/docs"
   },
   "demo": {
-    "api_url": "https://metasploit-mcp.fly.dev",
-    "sse_endpoint": "https://metasploit-mcp.fly.dev/sse"
+    "api_url": "https://metasploitmcp.onrender.com",
+    "sse_endpoint": "https://metasploitmcp.onrender.com/sse",
+    "health_check": "https://metasploitmcp.onrender.com/",
+    "hosted_on": "render.com"
   }
 }

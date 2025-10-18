@@ -33,7 +33,8 @@ The Model Context Protocol (MCP) is an open standard that enables AI assistants 
 
 ✅ **Repository**: Public on GitHub  
 ✅ **Documentation**: Comprehensive guides (README, TOOLS.md, BEGINNER_GUIDE.md)  
-✅ **API Deployment**: Live at https://metasploit-mcp.fly.dev/  
+✅ **API Deployment**: Live at https://metasploitmcp.onrender.com/ (Render.com)  
+✅ **MCP Manifest**: `mcp.json` available  
 ⚠️ **MCP Registry**: Not yet published  
 ⚠️ **NPM Package**: Not yet created  
 ✅ **Docker Support**: Dockerfile available  
@@ -339,9 +340,15 @@ docker-compose up -d
 
 ---
 
-### 5. Public HTTP/SSE API (✅ Already Deployed)
+### 5. Public HTTP/SSE API
 
-**Current Deployment**: https://metasploit-mcp.fly.dev/
+> ⚠️ **Note**: Fly.io offers only 7 days free trial. See **[FREE_HOSTING_ALTERNATIVES.md](FREE_HOSTING_ALTERNATIVES.md)** for sustainable free hosting options including Railway, Render, Koyeb, Oracle Cloud, and more.
+
+**Recommended Free Alternatives**:
+- **Oracle Cloud Always Free** (you already have this at 168.110.55.210!)
+- **Railway** ($5 credit/month, renewable)
+- **Render** (750 hours/month free)
+- **Koyeb** (permanent free tier)
 
 **How AI Projects Can Use It**:
 
@@ -350,7 +357,7 @@ docker-compose up -d
 import requests
 
 # Connect to SSE endpoint
-response = requests.get('https://metasploit-mcp.fly.dev/sse', stream=True)
+response = requests.get('https://metasploitmcp.onrender.com/sse', stream=True)
 
 for line in response.iter_lines():
     if line:
@@ -359,7 +366,7 @@ for line in response.iter_lines():
 
 ```javascript
 // JavaScript example
-const eventSource = new EventSource('https://metasploit-mcp.fly.dev/sse');
+const eventSource = new EventSource('https://metasploitmcp.onrender.com/sse');
 
 eventSource.onmessage = (event) => {
   console.log('Message:', event.data);
@@ -376,7 +383,7 @@ eventSource.onerror = (error) => {
 {
   "mcpServers": {
     "metasploit": {
-      "url": "https://metasploit-mcp.fly.dev/sse",
+      "url": "https://metasploitmcp.onrender.com/sse",
       "transport": "http"
     }
   }
@@ -484,7 +491,7 @@ info:
   version: 1.0.0
   description: Access Metasploit Framework through MCP
 servers:
-  - url: https://metasploit-mcp.fly.dev
+  - url: https://metasploitmcp.onrender.com
 paths:
   /sse:
     get:
@@ -514,7 +521,7 @@ from langchain.agents import initialize_agent
 import requests
 
 class MetasploitMCPTool:
-    def __init__(self, base_url="https://metasploit-mcp.fly.dev"):
+    def __init__(self, base_url="https://metasploitmcp.onrender.com"):
         self.base_url = base_url
     
     def list_exploits(self, search_term=""):
@@ -553,7 +560,7 @@ class MetasploitMCPPlugin:
     def __init__(self):
         self.name = "metasploit_mcp"
         self.description = "Access Metasploit Framework tools"
-        self.mcp_url = "https://metasploit-mcp.fly.dev/sse"
+        self.mcp_url = "https://metasploitmcp.onrender.com/sse"
     
     def execute(self, command, args):
         # Connect to MCP and execute tool
@@ -578,9 +585,9 @@ class MetasploitMCPPlugin:
   },
   "api": {
     "type": "openapi",
-    "url": "https://metasploit-mcp.fly.dev/docs"
+    "url": "https://metasploitmcp.onrender.com/docs"
   },
-  "logo_url": "https://metasploit-mcp.fly.dev/logo.png",
+  "logo_url": "https://metasploitmcp.onrender.com/logo.png",
   "contact_email": "your-email@example.com",
   "legal_info_url": "https://github.com/FandresenaR/MetasploitMCP/blob/main/LICENSE"
 }
@@ -734,7 +741,7 @@ Create `config-template.json`:
     },
     "public_api": {
       "_comment": "Use public HTTP API instead of local installation",
-      "url": "https://metasploit-mcp.fly.dev/sse",
+      "url": "https://metasploitmcp.onrender.com/sse",
       "transport": "http"
     }
   }

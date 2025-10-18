@@ -19,6 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Public API deployment considerations
   - Security best practices for public deployment
   - Complete checklist and roadmap
+- **FREE_HOSTING_ALTERNATIVES.md** - Comprehensive guide to sustainable free hosting:
+  - 7 free hosting platforms compared (Railway, Render, Koyeb, Oracle Cloud, Deta Space, Cyclic, Glitch)
+  - Detailed setup instructions for each platform
+  - Oracle Cloud + Cloudflare Tunnel guide (recommended - free forever, HTTPS, no domain needed)
+  - Oracle Cloud + Nginx + Let's Encrypt guide (free with custom domain)
+  - Security recommendations for public deployments
+  - Cost comparison and sustainability ratings
+  - Best choice recommendations for different use cases
+- **FREE_HOSTING_QUICK_START.md** - Quick reference for free hosting setup:
+  - Top recommendation: Oracle Cloud + Cloudflare Tunnel
+  - Comparison table of all free options
+  - Step-by-step setup for Oracle Cloud with systemd service
+  - Backup options (Railway, Render, Koyeb)
+  - Security reminder and action items checklist
 - **mcp.json** - MCP manifest file for registry submission
 - **SECURITY.md** - Comprehensive security policy:
   - Authorization and legal compliance requirements
@@ -143,8 +157,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Patch version**: Bug fixes and minor improvements
 
 ### Deployment Information
-- **Live Instance**: https://metasploit-mcp.fly.dev/
-- **API Documentation**: https://metasploit-mcp.fly.dev/docs
+- **Live Instance**: https://metasploitmcp.onrender.com/
+- **API Documentation**: https://metasploitmcp.onrender.com/docs
 - **Repository**: https://github.com/FandresenaR/MetasploitMCP
 
 [Unreleased]: https://github.com/FandresenaR/MetasploitMCP/compare/v1.0.0...HEAD

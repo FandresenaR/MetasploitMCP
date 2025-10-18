@@ -183,7 +183,7 @@ docker push fandresenar/metasploit-mcp:1.0.0
 
 ### Phase 4: Add Security Features to Public API
 
-**Current Status**: Public API at https://metasploit-mcp.fly.dev/ has NO authentication ⚠️
+**Current Status**: Public API at https://metasploitmcp.onrender.com/ has NO authentication ⚠️
 
 **Add these security features**:
 

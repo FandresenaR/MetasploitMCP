@@ -196,8 +196,8 @@ The following documentation files were kept as they provide ongoing value:
 ### Current Live Deployment
 
 - **Platform**: Fly.io
-- **URL**: https://metasploit-mcp.fly.dev/
-- **API Docs**: https://metasploit-mcp.fly.dev/docs
+- **URL**: https://metasploitmcp.onrender.com/
+- **API Docs**: https://metasploitmcp.onrender.com/docs
 - **Status**: ✅ Running in mock mode
 - **Region**: Ashburn, Virginia (iad)
 - **Configuration**: 1GB RAM, auto-scaling enabled

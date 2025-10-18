@@ -2,15 +2,103 @@
 
 This guide provides detailed deployment instructions for MetasploitMCP on various platforms.
 
+> 🌐 **Current Deployment**: The project is currently hosted on **Render.com** at https://metasploitmcp.onrender.com. See [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md) for details.
+> 
 > 📖 **Quick Start**: For a quick overview, see the [Deployment section in README.md](README.md#deployment).
 
 ## Table of Contents
 
+- [Render.com Deployment](#rendercom-deployment-recommended) ⭐ **Current**
 - [Fly.io Deployment](#flyio-deployment)
 - [Oracle Cloud Infrastructure](#oracle-cloud-infrastructure)
 - [Self-Hosted / VPS](#self-hosted--vps)
 - [Docker Deployment](#docker-deployment)
 - [Kubernetes Deployment](#kubernetes-deployment)
+
+---
+
+## Render.com Deployment (Recommended)
+
+> ✅ **Currently in use**: https://metasploitmcp.onrender.com
+
+Render.com is the recommended and currently used platform for hosting MetasploitMCP.
+
+### Why Render.com?
+
+- ✅ **750 hours/month free** (enough for continuous running)
+- ✅ **Automatic HTTPS** with SSL certificates
+- ✅ **Auto-deploy from GitHub** on every push
+- ✅ **No cold starts** on free tier (unlike Fly.io)
+- ✅ **Built-in monitoring** and logging
+- ✅ **One-click setup** with `render.yaml`
+
+### Quick Deploy
+
+1. **Fork this repository** to your GitHub account
+
+2. **Sign up at Render.com**:
+   - Go to https://render.com
+   - Sign up with GitHub
+
+3. **Create new Blueprint**:
+   - Click "New" → "Blueprint"
+   - Connect your forked repository
+   - Render automatically detects `render.yaml`
+
+4. **Configure environment variables**:
+   ```
+   MSF_SERVER=your.server.ip
+   MSF_PASSWORD=your_secure_password
+   OPENROUTER_API_KEY=your_api_key (optional)
+   ```
+
+5. **Deploy**:
+   - Click "Apply"
+   - Wait 2-3 minutes for build
+   - Your app will be live at `https://your-app-name.onrender.com`
+
+### Detailed Instructions
+
+For complete deployment guide, see **[RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)** which includes:
+- Step-by-step deployment process
+- Environment variables configuration
+- Connecting to external Metasploit
+- Monitoring and troubleshooting
+- Scaling options
+- Security best practices
+
+### render.yaml Configuration
+
+The project includes a `render.yaml` for infrastructure as code:
+
+```yaml
+services:
+  - type: web
+    name: metasploitmcp
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python MetasploitMCP.py --transport http --host 0.0.0.0 --port $PORT
+```
+
+### Connecting MCP Clients
+
+**Claude Desktop** (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "metasploit": {
+      "url": "https://metasploitmcp.onrender.com/sse"
+    }
+  }
+}
+```
+
+**Custom clients**:
+- **API Base**: `https://metasploitmcp.onrender.com`
+- **SSE Endpoint**: `https://metasploitmcp.onrender.com/sse`
+- **API Docs**: `https://metasploitmcp.onrender.com/docs`
+- **Health Check**: `https://metasploitmcp.onrender.com/`
 
 ---
 
@@ -470,12 +558,18 @@ kubectl apply -f k8s/deployment.yaml
 
 ## Deployment Comparison
 
-| Platform | Complexity | Cost | Best For |
-|----------|-----------|------|----------|
-| **Fly.io** | ⭐ Low | $5-10/mo | Quick demos, testing |
-| **Oracle Cloud** | ⭐⭐ Medium | Free tier | Production, full control |
-| **Self-hosted** | ⭐⭐⭐ High | VPS costs | Custom requirements |
-| **Kubernetes** | ⭐⭐⭐⭐ Very High | Variable | Enterprise, scale |
+| Platform | Complexity | Cost | Best For | Status |
+|----------|-----------|------|----------|--------|
+| **Render.com** | ⭐ Very Low | Free (750h) | Production API, auto-deploy | ✅ **IN USE** |
+| **Fly.io** | ⭐ Low | $5-10/mo | Quick demos, testing | Alternative |
+| **Oracle Cloud** | ⭐⭐ Medium | Free tier | Full Metasploit, control | Alternative |
+| **Self-hosted** | ⭐⭐⭐ High | VPS costs | Custom requirements | Advanced |
+| **Kubernetes** | ⭐⭐⭐⭐ Very High | Variable | Enterprise, scale | Advanced |
+
+**Current Recommendation:**
+- 🌐 **Render.com** (currently used): Best for API hosting with free tier, auto-deploy, and zero maintenance
+- 🖥️ **Oracle Cloud**: Best for running Metasploit Framework directly with full control
+- 🚀 **Fly.io**: Good alternative but requires payment after 7-day trial
 
 ## Security Checklist
 

@@ -191,8 +191,8 @@ MetasploitMCP/
 
 ### Current Live Deployment
 
-**🌐 Live Demo:** https://metasploit-mcp.fly.dev/  
-**📚 API Docs:** https://metasploit-mcp.fly.dev/docs  
+**🌐 Live Demo:** https://metasploitmcp.onrender.com/  
+**📚 API Docs:** https://metasploitmcp.onrender.com/docs  
 **⚙️ Mode:** Mock (no real Metasploit)  
 **🏢 Platform:** Fly.io (Ashburn, Virginia)
 
@@ -400,8 +400,8 @@ AI: "Completed. 12/15 hosts exploited. Report saved."
 - 🔧 [MSFRPCD_MANAGEMENT.md](MSFRPCD_MANAGEMENT.md) - msfrpcd reference
 
 ### Live Resources
-- 🌐 **Live Demo:** https://metasploit-mcp.fly.dev/
-- 📚 **API Docs:** https://metasploit-mcp.fly.dev/docs
+- 🌐 **Live Demo:** https://metasploitmcp.onrender.com/
+- 📚 **API Docs:** https://metasploitmcp.onrender.com/docs
 - 📦 **GitHub:** https://github.com/FandresenaR/MetasploitMCP
 
 ### External Resources

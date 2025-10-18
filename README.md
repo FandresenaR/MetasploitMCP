@@ -1,17 +1,16 @@
 # Metasploit MCP Server
 
-[![Deployed on Fly.io](https://img.shields.io/badge/Deployed%20on-Fly.io-blueviolet?style=flat&logo=fly.io)](https://metasploit-mcp.fly.dev/)
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=flat)](https://metasploit-mcp.fly.dev/docs)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Hosted on Render](https://img.shields.io/badge/Hosted%20on-Render-46E3B7?logo=render)](https://metasploitmcp.onrender.com)
+[![Free Hosting](https://img.shields.io/badge/Hosting-Free%20Options-success?style=flat)](FREE_HOSTING_ALTERNATIVES.md)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://metasploitmcp.onrender.com)
 
 A Model Context Protocol (MCP) server for Metasploit Framework integration.
 
 > 📝 **Project Updates**: See [CHANGELOG.md](CHANGELOG.md) for version history and recent changes.  
 > 🎓 **New to this project?** Check out the [Beginner's Guide](BEGINNER_GUIDE.md) for a comprehensive introduction!  
-> 🛠️ **Tool Reference**: See [TOOLS.md](TOOLS.md) for complete documentation of all 13 MCP tools with examples and best practices.
-
-**🌐 Live Demo:** [https://metasploit-mcp.fly.dev/](https://metasploit-mcp.fly.dev/)  
-**📚 API Docs:** [https://metasploit-mcp.fly.dev/docs](https://metasploit-mcp.fly.dev/docs)
+> 🛠️ **Tool Reference**: See [TOOLS.md](TOOLS.md) for complete documentation of all 13 MCP tools with examples and best practices.  
+> ☁️ **Free Hosting**: See [Free Hosting Alternatives](FREE_HOSTING_ALTERNATIVES.md) for sustainable free deployment options.
 
 
 https://github.com/user-attachments/assets/39b19fb5-8397-4ccd-b896-d1797ec185e1
@@ -21,14 +20,20 @@ https://github.com/user-attachments/assets/39b19fb5-8397-4ccd-b896-d1797ec185e1
 
 This MCP server provides a bridge between large language models like Claude and the Metasploit Framework penetration testing platform. It allows AI assistants to dynamically access and control Metasploit functionality through standardized tools, enabling a natural language interface to complex security testing workflows.
 
+**🚀 Live Deployment**: https://metasploitmcp.onrender.com (hosted on Render.com)
+
 ### Quick Links
 
 - 🎓 **[Beginner's Guide](BEGINNER_GUIDE.md)** - Complete introduction for newcomers
 - 🛠️ **[Tools Reference](TOOLS.md)** - Detailed documentation of all 13 tools
 - 🤖 **[MCP Integration Guide](MCP_INTEGRATION_GUIDE.md)** - Make available for all AI projects
 - ⚡ **[Quick Start Configs](QUICK_START_CONFIG.md)** - Ready-to-use configuration examples
+- 🌐 **[Render.com Deployment](RENDER_DEPLOYMENT.md)** - Current hosting on Render.com (recommended)
+- ✅ **[Render Setup Checklist](RENDER_SETUP_CHECKLIST.md)** - Complete deployment verification
+- ☁️ **[Free Hosting Quick Start](FREE_HOSTING_QUICK_START.md)** - Fast setup for free hosting
+- 🌐 **[Free Hosting Alternatives](FREE_HOSTING_ALTERNATIVES.md)** - Complete guide to all free hosting options
 - 📋 **[Changelog](CHANGELOG.md)** - Version history and updates
-- 🚀 **[Deployment Guide](DEPLOYMENT.md)** - Fly.io deployment instructions
+- 🚀 **[Deployment Guide](DEPLOYMENT.md)** - Deployment instructions
 - ⚙️ **[Setup Verification](SETUP_VERIFICATION.md)** - Production deployment report
 - 🔧 **[msfrpcd Management](MSFRPCD_MANAGEMENT.md)** - Daemon management guide
 - 🔒 **[Security Policy](SECURITY.md)** - Security considerations and best practices
@@ -434,12 +439,38 @@ You can also set this in your `.env.local` file:
 ```
 PAYLOAD_SAVE_DIR=/custom/path/to/payloads
 ```
-
 ## Deployment
 
-### Fly.io Deployment (Production)
+> 🌐 **Current Hosting**: This project is deployed on **Render.com** at https://metasploitmcp.onrender.com with free tier offering 750 hours/month! See **[RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)** for complete guide.
+> 
+> ☁️ **Alternative Hosting Options**: For other free hosting alternatives, see **[FREE_HOSTING_ALTERNATIVES.md](FREE_HOSTING_ALTERNATIVES.md)** covering Railway, Fly.io, Koyeb, Oracle Cloud, Deta Space, and more!
+> ☁️ **Looking for Free Hosting?** Fly.io offers only a 7-day free trial. For sustainable free alternatives, see **[FREE_HOSTING_ALTERNATIVES.md](FREE_HOSTING_ALTERNATIVES.md)** covering Railway, Render, Koyeb, Oracle Cloud (recommended - you already have this!), Deta Space, and more!
 
-The MetasploitMCP server is currently deployed on Fly.io at **https://metasploit-mcp.fly.dev/**
+### Render.com Deployment (Current - Recommended)
+
+✅ **Current deployment**: https://metasploitmcp.onrender.com
+
+Render.com offers:
+- **750 hours/month free**: Enough for continuous running
+- **Automatic HTTPS**: SSL certificates included
+- **No cold starts**: Always ready (unlike Fly.io free tier)
+- **Auto-deploy**: From GitHub on every push
+- **Easy setup**: One-click deployment with `render.yaml`
+
+See **[RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)** for complete deployment guide.
+
+### Quick Deploy to Render
+
+1. Fork this repository
+2. Sign up at https://render.com
+3. Click "New" → "Blueprint"
+4. Connect your forked repository
+5. Set environment variables (MSF_SERVER, MSF_PASSWORD, etc.)
+6. Deploy!
+
+### Fly.io Deployment (Alternative)
+
+⚠️ **Note**: Fly.io provides only 7 days free trial, then requires payment (~$5-10/month).
 
 #### Quick Deployment to Fly.io
 
@@ -704,20 +735,23 @@ For a production setup, consider:
 
 ### Deployment Comparison
 
-| Feature | Fly.io | Oracle Cloud |
-|---------|--------|--------------|
-| **Setup Time** | 5 minutes | 30+ minutes |
-| **Cost (Minimal Usage)** | ~$5-10/month | Free tier available |
-| **Auto-scaling** | ✅ Built-in | ❌ Manual |
-| **HTTPS** | ✅ Automatic | ❌ Manual setup |
-| **Maintenance** | ✅ Managed | ❌ You manage |
-| **Cold Starts** | ✅ Yes (auto-stop) | ❌ Always running |
-| **Full Metasploit** | ⚠️ Complex | ✅ Easy to install |
-| **Control** | ⚠️ Limited | ✅ Full control |
+| Feature | Render.com | Fly.io | Oracle Cloud |
+|---------|------------|--------|--------------|
+| **Setup Time** | 3 minutes | 5 minutes | 30+ minutes |
+| **Cost (Free Tier)** | 750 hrs/month | 7-day trial | Always free |
+| **Auto-scaling** | ⚠️ Limited | ✅ Built-in | ❌ Manual |
+| **HTTPS** | ✅ Automatic | ✅ Automatic | ❌ Manual setup |
+| **Maintenance** | ✅ Managed | ✅ Managed | ❌ You manage |
+| **Cold Starts** | ⚠️ Minimal | ✅ Yes (auto-stop) | ❌ Always running |
+| **Auto-deploy** | ✅ GitHub | ✅ CLI/GitHub | ❌ Manual |
+| **Full Metasploit** | ⚠️ External | ⚠️ Complex | ✅ Easy to install |
+| **Control** | ⚠️ Limited | ⚠️ Limited | ✅ Full control |
+| **Current Status** | ✅ **IN USE** | Alternative | Alternative |
 
 **Recommendation:**
-- **Fly.io**: Best for quick demos, development, and testing
-- **Oracle Cloud**: Best for production, long-running instances, and full Metasploit integration
+- **Render.com**: Best for production API, free hosting, auto-deploy (⭐ **CURRENTLY USED**)
+- **Fly.io**: Good for quick demos, but requires payment after 7 days
+- **Oracle Cloud**: Best for running Metasploit Framework directly, full control
 
 ## License
 

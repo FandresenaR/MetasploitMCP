@@ -619,7 +619,7 @@ flyctl deploy
 - ❌ Needs external Metasploit for real use
 - ❌ Limited control
 
-**Live Demo:** https://metasploit-mcp.fly.dev/
+**Live Demo:** https://metasploitmcp.onrender.com/
 
 ### 3. Oracle Cloud
 
