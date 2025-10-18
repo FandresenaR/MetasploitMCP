@@ -81,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Simplified remote server access with oracle_metasploit_key
 
 ### Changed
-- Updated README.md with Fly.io deployment information
+- Updated README.md with  deployment information
 - Consolidated deployment documentation
 - Improved README structure and clarity
 - Added beginner's guide reference in README
@@ -113,7 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenRouter AI integration for exploit analysis
 - Comprehensive test suite with pytest
 - Docker support with optimized Dockerfile
-- Fly.io deployment configuration
+-  deployment configuration
 - Mock mode for testing without Metasploit
 - Automated msfrpcd management scripts
 - Makefile for common operations
@@ -134,7 +134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 - Comprehensive README with usage examples
-- Deployment guide for Fly.io
+- Deployment guide for 
 - msfrpcd management documentation
 - Testing documentation with coverage reporting
 - API documentation via Swagger UI

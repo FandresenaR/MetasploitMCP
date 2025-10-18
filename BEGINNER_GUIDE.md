@@ -84,7 +84,7 @@ MetasploitMCP creates a **standardized communication channel** so AI assistants 
 #### HTTP/SSE (Server-Sent Events)
 - **Use case**: Web-based, cloud deployments
 - **How it works**: Like a website that pushes updates
-- **Example**: Deployed on Fly.io, accessible via browser
+- **Example**: Deployed on , accessible via browser
 
 #### STDIO (Standard Input/Output)
 - **Use case**: Desktop applications like Claude Desktop
@@ -527,7 +527,7 @@ OPENROUTER_BASE_URL=https://your-ai-service.com/v1
 export PAYLOAD_SAVE_DIR=/custom/path
 ```
 
-### 4. Auto-Scaling (Fly.io)
+### 4. Auto-Scaling ()
 
 **What is it?**
 - Automatic start/stop of server instances
@@ -539,7 +539,7 @@ export PAYLOAD_SAVE_DIR=/custom/path
 3. Request processed → Results returned
 4. No activity → Stops again
 
-**Configuration in `fly.toml`:**
+**Configuration in ``:**
 ```toml
 auto_stop_machines = 'stop'
 auto_start_machines = true
@@ -555,7 +555,7 @@ min_machines_running = 0
 
 **Connection Security:**
 - SSL/TLS support for RPC
-- HTTPS automatic on Fly.io
+- HTTPS automatic on 
 - Secret management in cloud
 
 **Access Control:**
@@ -597,15 +597,15 @@ python MetasploitMCP.py --transport http
 - ❌ Manual management
 - ❌ Requires local Metasploit
 
-### 2. Fly.io (Cloud)
+### 2.  (Cloud)
 
 **Best for:** Demos, web-based use, prototypes
 
 **Setup:**
 ```bash
-flyctl launch
-flyctl secrets set MSFRPCD_PASSWORD=xxx
-flyctl deploy
+ launch
+ secrets set MSFRPCD_PASSWORD=xxx
+ deploy
 ```
 
 **Pros:**
@@ -1046,16 +1046,16 @@ export PAYLOAD_SAVE_DIR=/custom/path
 
 #### 5. Cloud Deployment Issues
 
-**Fly.io:**
+**:**
 ```bash
 # Check logs
-flyctl logs
+ logs
 
 # Verify secrets
-flyctl secrets list
+ secrets list
 
 # Restart app
-flyctl deploy
+ deploy
 ```
 
 **Oracle Cloud:**
@@ -1100,7 +1100,7 @@ docker logs metasploit-mcp
 ### For Intermediate Users
 
 1. **Deploy to Cloud**
-   - Try Fly.io for quick deploy
+   - Try  for quick deploy
    - Or Oracle Cloud for free tier
 
 2. **Integrate with AI Assistant**
@@ -1147,7 +1147,7 @@ docker logs metasploit-mcp
 - [Metasploit Documentation](https://docs.metasploit.com/)
 - [MCP Protocol Specification](https://modelcontextprotocol.io/)
 - [OpenRouter Documentation](https://openrouter.ai/docs)
-- [Fly.io Documentation](https://fly.io/docs/)
+- [ Documentation](https://render.com/docs/)
 - [Oracle Cloud Documentation](https://docs.oracle.com/cloud/)
 
 ### Community

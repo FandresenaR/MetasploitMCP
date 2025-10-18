@@ -63,7 +63,6 @@ Official MCP registry manifest with:
 #### ✅ Already Done:
 1. **Public GitHub Repository** ✓
 2. **Comprehensive Documentation** ✓
-3. **Public API Deployment** (Fly.io) ✓
 4. **Docker Support** ✓
 5. **mcp.json Manifest** ✓
 6. **Security Policy** ✓
@@ -212,9 +211,7 @@ async def sse_endpoint():
     pass
 ```
 
-3. **Set Fly.io Secret**:
 ```bash
-flyctl secrets set MCP_API_KEY=$(openssl rand -base64 32)
 ```
 
 **Timeline**: ~2 hours to implement and deploy
@@ -226,7 +223,6 @@ flyctl secrets set MCP_API_KEY=$(openssl rand -base64 32)
 ### ✅ Completed
 - [x] Public GitHub repository
 - [x] Comprehensive documentation (5+ guides)
-- [x] Public API deployment (Fly.io)
 - [x] Docker support with Dockerfile
 - [x] MCP manifest (mcp.json)
 - [x] Security policy (SECURITY.md)
@@ -297,7 +293,6 @@ flyctl secrets set MCP_API_KEY=$(openssl rand -base64 32)
 1. Add authentication to public API (Day 1-2)
 2. Implement rate limiting (Day 2-3)
 3. Submit to MCP Registry (Day 4)
-4. Deploy security updates to Fly.io (Day 5)
 
 ### Week 2: Distribution
 1. Create NPM package structure (Day 1-2)

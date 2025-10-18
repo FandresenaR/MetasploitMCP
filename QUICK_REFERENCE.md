@@ -43,7 +43,6 @@ MetasploitMCP/
 ├── 🐳 Deployment Files
 │   ├── Dockerfile                 🐋 For cloud deployment (mock mode)
 │   ├── Dockerfile.metasploit      🐋 With Metasploit (larger)
-│   ├── fly.toml                   ☁️  Fly.io configuration
 │   └── docker-compose.yml         🐙 Docker Compose setup
 │
 ├── 🧪 Testing
@@ -182,7 +181,6 @@ MetasploitMCP/
 │   Platform     │  Setup Time  │     Cost     │   Best For      │
 ├────────────────┼──────────────┼──────────────┼─────────────────┤
 │ 🖥️  Local      │   15 min     │    Free      │ Development     │
-│ ☁️  Fly.io     │   5 min      │  $5-10/mo    │ Demos/Testing   │
 │ 🌩️  Oracle     │   30 min     │    FREE!     │ Production      │
 │ 🐳 Docker      │   10 min     │    Free      │ Portability     │
 │ ☸️  Kubernetes │   2 hours    │  Variable    │ Enterprise      │
@@ -194,7 +192,6 @@ MetasploitMCP/
 **🌐 Live Demo:** https://metasploitmcp.onrender.com/  
 **📚 API Docs:** https://metasploitmcp.onrender.com/docs  
 **⚙️ Mode:** Mock (no real Metasploit)  
-**🏢 Platform:** Fly.io (Ashburn, Virginia)
 
 ---
 
@@ -266,7 +263,6 @@ OPENROUTER_API_KEY=your_api_key_here
 PAYLOAD_SAVE_DIR=~/payloads
 ```
 
-### `fly.toml` (Cloud Config)
 ```toml
 app = 'metasploit-mcp'
 primary_region = 'iad'
@@ -323,19 +319,14 @@ python MetasploitMCP.py --transport http
 http://localhost:8080/docs
 ```
 
-### Option 3: Deploy to Fly.io
 ```bash
 # Login
-flyctl auth login
 
 # Launch
-flyctl launch
 
 # Set secrets
-flyctl secrets set MSFRPCD_PASSWORD=xxx
 
 # Deploy
-flyctl deploy
 
 # Access
 https://your-app.fly.dev
@@ -385,7 +376,6 @@ AI: "Completed. 12/15 hosts exploited. Report saved."
 🌍 Deployment Options:  5 platforms
 ⭐ GitHub Stars:        [Your stats]
 🐳 Docker Image Size:   134 MB (optimized)
-☁️  Cloud Hosting:      Fly.io (live demo)
 ```
 
 ---
@@ -407,7 +397,6 @@ AI: "Completed. 12/15 hosts exploited. Report saved."
 ### External Resources
 - 🔴 [Metasploit Framework](https://docs.metasploit.com/)
 - 🤖 [MCP Protocol](https://modelcontextprotocol.io/)
-- ☁️ [Fly.io Docs](https://fly.io/docs/)
 - 🌩️ [Oracle Cloud Docs](https://docs.oracle.com/cloud/)
 
 ---
@@ -431,7 +420,6 @@ AI: "Completed. 12/15 hosts exploited. Report saved."
            └─> Test real exploits
 
 4. CLOUD DEPLOYMENT
-   └─> Try Fly.io (5 min)
        └─> Or Oracle Cloud (free)
            └─> Share with team
 

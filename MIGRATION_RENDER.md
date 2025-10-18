@@ -58,7 +58,6 @@ Le projet MetasploitMCP a été mis à jour pour refléter son hébergement actu
 
 ### 3. URLs mises à jour
 
-Toutes les références à l'ancien hébergement Fly.io ont été remplacées:
 
 **Ancien**: `https://metasploit-mcp.fly.dev`  
 **Nouveau**: `https://metasploitmcp.onrender.com`
@@ -74,9 +73,7 @@ Le fichier `render.yaml` configure:
 
 ## Avantages de Render.com
 
-### Par rapport à Fly.io
 
-| Aspect | Render.com | Fly.io |
 |--------|------------|--------|
 | **Coût gratuit** | 750h/mois (permanent) | 7 jours d'essai |
 | **Setup** | 1-click avec render.yaml | CLI required |

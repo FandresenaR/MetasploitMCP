@@ -4,7 +4,7 @@
 
 ## Quick Answer: Best Free Options
 
-Since **Fly.io offers only 7 days free**, here are sustainable alternatives. **We're currently using Render.com!**
+We're currently using **Render.com** for free hosting with 750 hours/month!
 
 ---
 
@@ -172,27 +172,27 @@ koyeb app init metasploitmcp --git github.com/FandresenaR/MetasploitMCP
 
 | Platform | Free? | Forever? | Cold Starts? | HTTPS? | Recommended? |
 |----------|-------|----------|--------------|--------|--------------|
-| **Oracle Cloud** | ✅ | ✅ | ❌ | ✅ (w/ tunnel) | ⭐⭐⭐⭐⭐ |
+| **Render** | ✅ | ✅ | ✅ (minimal) | ✅ | ⭐⭐⭐⭐⭐ (IN USE) |
+| **Oracle Cloud** | ✅ | ✅ | ❌ | ✅ (w/ tunnel) | ⭐⭐⭐⭐ |
 | **Railway** | ✅ | ✅ (credit) | ❌ | ✅ | ⭐⭐⭐⭐ |
-| **Render** | ✅ | ✅ | ✅ | ✅ | ⭐⭐⭐⭐ |
 | **Koyeb** | ✅ | ✅ | ❌ | ✅ | ⭐⭐⭐⭐ |
-| **Fly.io** | ❌ | ❌ (7 days) | ❌ | ✅ | ⭐ |
 
 ---
 
 ## 🎯 Recommended Strategy
 
-### Use Both for Redundancy:
+### Current Setup (Render.com):
 
-1. **Primary**: Oracle Cloud + Cloudflare Tunnel
+1. **Primary**: Render.com (https://metasploitmcp.onrender.com)
+   - Free 750 hours/month
+   - Auto-deploy from GitHub
+   - HTTPS automatic
+   - Zero maintenance
+
+2. **Backup**: Oracle Cloud
    - Free forever
    - No cold starts
-   - Best performance
-
-2. **Backup**: Railway
-   - Easy to deploy
-   - Good for testing
-   - $5/month credit
+   - Full Metasploit installation possible
 
 ---
 

@@ -26,7 +26,7 @@ The Model Context Protocol (MCP) is an open standard that enables AI assistants 
 1. **Publish to MCP Registry** - Official MCP server directory
 2. **NPM Package** - Distributable package for Node.js environments
 3. **Docker Image** - Containerized deployment
-4. **Public API** - HTTP/SSE endpoint (your current Fly.io deployment)
+4. **Public API** - HTTP/SSE endpoint (your current render.com deployment)
 5. **GitHub Repository** - Open source with clear documentation
 
 ### Current Status
@@ -342,7 +342,7 @@ docker-compose up -d
 
 ### 5. Public HTTP/SSE API
 
-> ⚠️ **Note**: Fly.io offers only 7 days free trial. See **[FREE_HOSTING_ALTERNATIVES.md](FREE_HOSTING_ALTERNATIVES.md)** for sustainable free hosting options including Railway, Render, Koyeb, Oracle Cloud, and more.
+> ⚠️ **Note**: render.com offers only 7 days free trial. See **[FREE_HOSTING_ALTERNATIVES.md](FREE_HOSTING_ALTERNATIVES.md)** for sustainable free hosting options including Railway, Render, Koyeb, Oracle Cloud, and more.
 
 **Recommended Free Alternatives**:
 - **Oracle Cloud Always Free** (you already have this at 168.110.55.210!)
@@ -821,7 +821,7 @@ async def ip_whitelist_middleware(request: Request, call_next):
 ### Deployment Security
 
 **For Public API**:
-- ✅ HTTPS enabled (Fly.io provides this)
+- ✅ HTTPS enabled (render.com provides this)
 - ⚠️ Add authentication
 - ⚠️ Add rate limiting
 - ⚠️ Add audit logging
@@ -912,7 +912,6 @@ gh release create v1.1.0 \
   --notes "See CHANGELOG.md for details"
 
 # 6. Update deployments
-flyctl deploy  # Fly.io
 docker build -t fandresenar/metasploit-mcp:1.1.0 .
 docker push fandresenar/metasploit-mcp:1.1.0
 ```
@@ -926,7 +925,7 @@ docker push fandresenar/metasploit-mcp:1.1.0
 - [x] Public GitHub repository
 - [x] Comprehensive documentation
 - [x] Docker support
-- [x] Public API (Fly.io)
+- [x] Public API (render.com)
 - [ ] Create `mcp.json` manifest
 - [ ] Create `SECURITY.md`
 - [ ] Add authentication to public API

@@ -12,7 +12,6 @@ This deployment provides:
 - ✅ Automatic deployments from GitHub
 - ✅ Environment variables management
 - ✅ Built-in logging and monitoring
-- ✅ No cold starts on free tier (unlike Fly.io)
 
 ## Features
 
@@ -167,7 +166,6 @@ To use a custom domain:
 - **0.1 CPU**: CPU allocation
 - **Disk**: Temporary storage only (ephemeral)
 - **Bandwidth**: 100 GB/month
-- **Sleep after inactivity**: No automatic sleep (unlike Fly.io)
 
 ### Important Notes
 
@@ -232,9 +230,7 @@ Should return:
 5. **API Keys**: Rotate OpenRouter keys regularly
 6. **Monitoring**: Enable Render notifications
 
-## Comparison: Render vs Fly.io
 
-| Feature | Render.com | Fly.io |
 |---------|------------|--------|
 | **Free Tier** | 750 hours/month | 7-day trial only |
 | **Setup** | Very easy | Easy |

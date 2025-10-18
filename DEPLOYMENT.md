@@ -9,7 +9,6 @@ This guide provides detailed deployment instructions for MetasploitMCP on variou
 ## Table of Contents
 
 - [Render.com Deployment](#rendercom-deployment-recommended) ⭐ **Current**
-- [Fly.io Deployment](#flyio-deployment)
 - [Oracle Cloud Infrastructure](#oracle-cloud-infrastructure)
 - [Self-Hosted / VPS](#self-hosted--vps)
 - [Docker Deployment](#docker-deployment)
@@ -28,7 +27,6 @@ Render.com is the recommended and currently used platform for hosting Metasploit
 - ✅ **750 hours/month free** (enough for continuous running)
 - ✅ **Automatic HTTPS** with SSL certificates
 - ✅ **Auto-deploy from GitHub** on every push
-- ✅ **No cold starts** on free tier (unlike Fly.io)
 - ✅ **Built-in monitoring** and logging
 - ✅ **One-click setup** with `render.yaml`
 
@@ -99,92 +97,6 @@ services:
 - **SSE Endpoint**: `https://metasploitmcp.onrender.com/sse`
 - **API Docs**: `https://metasploitmcp.onrender.com/docs`
 - **Health Check**: `https://metasploitmcp.onrender.com/`
-
----
-
-## Fly.io Deployment
-
-### Prerequisites
-
-1. Install the Fly CLI:
-   ```bash
-   curl -L https://fly.io/install.sh | sh
-   ```
-
-2. Login to Fly.io:
-   ```bash
-   flyctl auth login
-   ```
-
-### Quick Deploy
-
-1. **Initialize your Fly.io app**:
-   ```bash
-   flyctl launch --no-deploy
-   ```
-   
-   - Choose a unique app name or accept the generated one
-   - Select a region close to your users
-   - Skip database setup (not needed)
-
-2. **Set environment secrets**:
-   ```bash
-   flyctl secrets set MSFRPCD_PASSWORD=your_password_here
-   flyctl secrets set OPENROUTER_API_KEY=your_api_key_here
-   ```
-
-3. **Deploy**:
-   ```bash
-   flyctl deploy
-   ```
-
-### Alternative: Explicit Dockerfile
-
-```bash
-flyctl deploy --dockerfile Dockerfile
-```
-
-### Troubleshooting
-
-**Issue: mise Python installation error**
-- **Solution**: The Dockerfile uses official Python image, avoiding mise entirely.
-
-**Issue: Connection refused**
-- **Solution**: Ensure app binds to `0.0.0.0`. The Dockerfile is pre-configured.
-
-**Issue: App crashes on startup**
-- **Solution**: Check logs with `flyctl logs`
-- The app runs in mock mode by default (no Metasploit)
-
-**Check deployment status**:
-```bash
-flyctl status
-flyctl logs
-flyctl open  # Open in browser
-```
-
-### Running with Real Metasploit
-
-To connect to an actual Metasploit instance:
-
-**Option 1: External Server**
-```bash
-flyctl secrets set MSFRPCD_HOST=your.server.ip
-flyctl secrets set MSFRPCD_PORT=55553
-flyctl secrets set MSFRPCD_PASSWORD=your_password
-```
-
-**Option 2: Install in Container** (Advanced)
-- Use `Dockerfile.metasploit` for Metasploit-enabled container
-- Requires more memory: `flyctl scale memory 2048`
-
-### Scaling Resources
-
-Edit `fly.toml` or use CLI:
-```bash
-flyctl scale memory 2048  # 2GB RAM
-flyctl scale count 2      # 2 machines
-```
 
 ---
 
@@ -561,7 +473,6 @@ kubectl apply -f k8s/deployment.yaml
 | Platform | Complexity | Cost | Best For | Status |
 |----------|-----------|------|----------|--------|
 | **Render.com** | ⭐ Very Low | Free (750h) | Production API, auto-deploy | ✅ **IN USE** |
-| **Fly.io** | ⭐ Low | $5-10/mo | Quick demos, testing | Alternative |
 | **Oracle Cloud** | ⭐⭐ Medium | Free tier | Full Metasploit, control | Alternative |
 | **Self-hosted** | ⭐⭐⭐ High | VPS costs | Custom requirements | Advanced |
 | **Kubernetes** | ⭐⭐⭐⭐ Very High | Variable | Enterprise, scale | Advanced |
@@ -569,7 +480,6 @@ kubectl apply -f k8s/deployment.yaml
 **Current Recommendation:**
 - 🌐 **Render.com** (currently used): Best for API hosting with free tier, auto-deploy, and zero maintenance
 - 🖥️ **Oracle Cloud**: Best for running Metasploit Framework directly with full control
-- 🚀 **Fly.io**: Good alternative but requires payment after 7-day trial
 
 ## Security Checklist
 

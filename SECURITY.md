@@ -156,7 +156,6 @@ chmod 600 .env.local
 # - AWS Secrets Manager
 # - Azure Key Vault
 # - HashiCorp Vault
-# - Fly.io Secrets
 
 # BAD: Hardcoded in code (NEVER DO THIS)
 MSF_PASSWORD = "mypassword"

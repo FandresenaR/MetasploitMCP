@@ -62,11 +62,11 @@ Vous avez raison ! Voici la **vraie architecture** :
 
 ---
 
-### 3️⃣ **Fly.io (metasploit-mcp.fly.dev)** - Container Cloud
+### 3️⃣ ** (metasploit-mcp.fly.dev)** - Container Cloud
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  Fly.io: metasploit-mcp.fly.dev                        │
+│  : metasploit-mcp.fly.dev                        │
 │  ┌───────────────────────────────────────────────────┐  │
 │  │                                                    │  │
 │  │  ✅ MetasploitMCP (mode --mock)                  │  │
@@ -145,7 +145,7 @@ Vous avez raison ! Voici la **vraie architecture** :
 
 ## 📊 Tableau Récapitulatif
 
-| Composant | Oracle Cloud | Machine Locale | Fly.io |
+| Composant | Oracle Cloud | Machine Locale |  |
 |-----------|--------------|----------------|--------|
 | **Metasploit Framework** | ✅ OUI | ❌ NON | ❌ NON |
 | **msfrpcd** | ✅ OUI (PID: 264782) | ❌ NON | ❌ NON |
@@ -193,9 +193,9 @@ cat .env.local
 
 ---
 
-### 3. **Fly.io = Démo Publique**
+### 3. ** = Démo Publique**
 ```bash
-# Ce qui tourne sur Fly.io
+# Ce qui tourne sur 
 https://metasploitmcp.onrender.com/
 
 # Mode mock activé
@@ -245,7 +245,7 @@ MSF_SSL=true
 1. **Oracle Cloud** héberge **SEULEMENT Metasploit** (msfrpcd)
 2. **MetasploitMCP** tourne sur **votre machine locale** (Kali)
 3. **MetasploitMCP local** se connecte à **msfrpcd distant** (Oracle)
-4. **Fly.io** est une démo mock **indépendante**
+4. **** est une démo mock **indépendante**
 
 ### ❌ Ce Qui Est Faux (mon erreur) :
 1. ~~MetasploitMCP tourne sur Oracle~~ ❌
@@ -374,7 +374,7 @@ Inconvénient:
 - ✅ Se connecte à Oracle pour Metasploit
 - ✅ Python venv local
 
-#### 3. Fly.io (metasploit-mcp.fly.dev)
+#### 3.  (metasploit-mcp.fly.dev)
 - ✅ MetasploitMCP (mode mock)
 - ❌ Pas de vrai Metasploit
 - ⚠️ Gratuit 7 jours seulement
@@ -389,7 +389,7 @@ Inconvénient:
 2. **Ajouter Cloudflare Tunnel** pour HTTPS public
 3. **Résultat** : API publique avec vrai Metasploit, gratuit pour toujours
 
-**Fly.io reste optionnel** (uniquement pour démo mock)
+** reste optionnel** (uniquement pour démo mock)
 
 ---
 

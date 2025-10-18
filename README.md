@@ -443,8 +443,7 @@ PAYLOAD_SAVE_DIR=/custom/path/to/payloads
 
 > 🌐 **Current Hosting**: This project is deployed on **Render.com** at https://metasploitmcp.onrender.com with free tier offering 750 hours/month! See **[RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)** for complete guide.
 > 
-> ☁️ **Alternative Hosting Options**: For other free hosting alternatives, see **[FREE_HOSTING_ALTERNATIVES.md](FREE_HOSTING_ALTERNATIVES.md)** covering Railway, Fly.io, Koyeb, Oracle Cloud, Deta Space, and more!
-> ☁️ **Looking for Free Hosting?** Fly.io offers only a 7-day free trial. For sustainable free alternatives, see **[FREE_HOSTING_ALTERNATIVES.md](FREE_HOSTING_ALTERNATIVES.md)** covering Railway, Render, Koyeb, Oracle Cloud (recommended - you already have this!), Deta Space, and more!
+> ☁️ **Alternative Hosting Options**: For other free hosting alternatives, see **[FREE_HOSTING_ALTERNATIVES.md](FREE_HOSTING_ALTERNATIVES.md)** covering Railway, Koyeb, Oracle Cloud, Deta Space, and more!
 
 ### Render.com Deployment (Current - Recommended)
 
@@ -453,7 +452,7 @@ PAYLOAD_SAVE_DIR=/custom/path/to/payloads
 Render.com offers:
 - **750 hours/month free**: Enough for continuous running
 - **Automatic HTTPS**: SSL certificates included
-- **No cold starts**: Always ready (unlike Fly.io free tier)
+- **No cold starts**: Always ready on free tier
 - **Auto-deploy**: From GitHub on every push
 - **Easy setup**: One-click deployment with `render.yaml`
 
@@ -468,94 +467,7 @@ See **[RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)** for complete deployment gui
 5. Set environment variables (MSF_SERVER, MSF_PASSWORD, etc.)
 6. Deploy!
 
-### Fly.io Deployment (Alternative)
-
-⚠️ **Note**: Fly.io provides only 7 days free trial, then requires payment (~$5-10/month).
-
-#### Quick Deployment to Fly.io
-
-1. **Install Fly CLI**:
-   ```bash
-   curl -L https://fly.io/install.sh | sh
-   ```
-
-2. **Login to Fly.io**:
-   ```bash
-   flyctl auth login
-   ```
-
-3. **Launch your app**:
-   ```bash
-   flyctl launch --no-deploy
-   ```
-   - Choose a unique app name
-   - Select a region close to your users
-   - Skip database setup (not required)
-
-4. **Set environment secrets** (optional):
-   ```bash
-   flyctl secrets set MSFRPCD_PASSWORD=your_secure_password
-   flyctl secrets set OPENROUTER_API_KEY=your_api_key
-   ```
-
-5. **Deploy**:
-   ```bash
-   flyctl deploy
-   ```
-
-#### Fly.io Configuration
-
-The included `fly.toml` configuration provides:
-- **Auto-scaling**: Machines stop when idle (cost-efficient)
-- **HTTPS**: Automatically enabled
-- **Memory**: 1GB RAM (adjustable)
-- **Region**: Ashburn, Virginia (iad) - configurable
-- **Mock Mode**: Runs without Metasploit Framework by default
-
-#### Connecting to External Metasploit
-
-To connect your Fly.io deployment to a Metasploit instance:
-
-**Option 1: Via Tunnel (Development)**
-```bash
-# Expose your local msfrpcd with ngrok
-ngrok tcp 55553
-
-# Configure Fly.io with tunnel URL
-flyctl secrets set MSFRPCD_HOST="0.tcp.ngrok.io"
-flyctl secrets set MSFRPCD_PORT="12345"  # Use port from ngrok
-flyctl secrets set MSFRPCD_PASSWORD="your_password"
-```
-
-**Option 2: VPS/Cloud Server (Production)**
-```bash
-# Configure with your VPS IP
-flyctl secrets set MSFRPCD_HOST="your.vps.ip"
-flyctl secrets set MSFRPCD_PORT="55553"
-flyctl secrets set MSFRPCD_PASSWORD="your_password"
-```
-
-#### Fly.io Management Commands
-
-```bash
-# View app status
-flyctl status
-
-# View logs in real-time
-flyctl logs
-
-# Scale resources
-flyctl scale memory 2048  # Increase to 2GB
-flyctl scale count 2      # Add more machines
-
-# SSH into machine
-flyctl ssh console
-
-# Open app in browser
-flyctl open
-```
-
-For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+For detailed deployment instructions and alternative hosting options, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ### Production Deployment Verification
 
@@ -692,7 +604,6 @@ For production workloads requiring high availability:
 - Persistent compute instances
 - Full control over the environment
 - Can install Metasploit Framework directly
-- No cold starts (unlike Fly.io auto-stop)
 
 **Cons:**
 - More manual configuration required
@@ -701,7 +612,6 @@ For production workloads requiring high availability:
 - Manual scaling
 
 **Cost Comparison:**
-- **Fly.io**: ~$5-10/month, auto-scaling, managed infrastructure
 - **Oracle Cloud**: Free tier available, but you manage everything
 
 #### Securing Oracle Cloud Deployment
@@ -735,22 +645,21 @@ For a production setup, consider:
 
 ### Deployment Comparison
 
-| Feature | Render.com | Fly.io | Oracle Cloud |
-|---------|------------|--------|--------------|
-| **Setup Time** | 3 minutes | 5 minutes | 30+ minutes |
-| **Cost (Free Tier)** | 750 hrs/month | 7-day trial | Always free |
-| **Auto-scaling** | ⚠️ Limited | ✅ Built-in | ❌ Manual |
-| **HTTPS** | ✅ Automatic | ✅ Automatic | ❌ Manual setup |
-| **Maintenance** | ✅ Managed | ✅ Managed | ❌ You manage |
-| **Cold Starts** | ⚠️ Minimal | ✅ Yes (auto-stop) | ❌ Always running |
-| **Auto-deploy** | ✅ GitHub | ✅ CLI/GitHub | ❌ Manual |
-| **Full Metasploit** | ⚠️ External | ⚠️ Complex | ✅ Easy to install |
-| **Control** | ⚠️ Limited | ⚠️ Limited | ✅ Full control |
-| **Current Status** | ✅ **IN USE** | Alternative | Alternative |
+| Feature | Render.com | Oracle Cloud |
+|---------|------------|--------------|
+| **Setup Time** | 3 minutes | 30+ minutes |
+| **Cost (Free Tier)** | 750 hrs/month | Always free |
+| **Auto-scaling** | ⚠️ Limited | ❌ Manual |
+| **HTTPS** | ✅ Automatic | ❌ Manual setup |
+| **Maintenance** | ✅ Managed | ❌ You manage |
+| **Cold Starts** | ⚠️ Minimal | ❌ Always running |
+| **Auto-deploy** | ✅ GitHub | ❌ Manual |
+| **Full Metasploit** | ⚠️ External | ✅ Easy to install |
+| **Control** | ⚠️ Limited | ✅ Full control |
+| **Current Status** | ✅ **IN USE** | Alternative |
 
 **Recommendation:**
 - **Render.com**: Best for production API, free hosting, auto-deploy (⭐ **CURRENTLY USED**)
-- **Fly.io**: Good for quick demos, but requires payment after 7 days
 - **Oracle Cloud**: Best for running Metasploit Framework directly, full control
 
 ## License

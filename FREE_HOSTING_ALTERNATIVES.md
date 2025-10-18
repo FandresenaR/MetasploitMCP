@@ -4,7 +4,6 @@
 
 ## Overview
 
-This guide covers **free, long-term hosting options** for MetasploitMCP's HTTP/SSE API endpoint. Unlike Fly.io's 7-day trial, these alternatives offer sustainable free tiers.
 
 **Current Status**: MetasploitMCP is successfully deployed on Render.com. See [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md) for details.
 
@@ -692,7 +691,6 @@ ALLOWED_IPS=192.168.1.0/24,10.0.0.1
 | **Render** | $0 (750h/month) | ⭐⭐⭐⭐ | 5 min |
 | **Koyeb** | $0 forever | ⭐⭐⭐⭐⭐ | 10 min |
 | **Deta Space** | $0 forever | ⭐⭐⭐⭐⭐ | 5 min |
-| **Fly.io** | $0 (7 days only) | ⭐ | 5 min |
 
 ---
 
