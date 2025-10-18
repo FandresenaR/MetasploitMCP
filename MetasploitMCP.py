@@ -132,19 +132,29 @@ def initialize_msf_client() -> MsfRpcClient:
 
     try:
         logger.debug(f"Attempting to create MsfRpcClient connection to {MSF_SERVER}:{msf_port} (SSL: {msf_ssl})...")
-        client = MsfRpcClient(
-            password=MSF_PASSWORD,
-            server=MSF_SERVER,
-            port=msf_port,
-            ssl=msf_ssl
-        )
-        # Test connection during initialization
-        logger.debug("Testing connection with core.version call...")
-        version_info = client.core.version
-        msf_version = version_info.get('version', 'unknown') if isinstance(version_info, dict) else 'unknown'
-        logger.info(f"Successfully connected to Metasploit RPC at {MSF_SERVER}:{msf_port} (SSL: {msf_ssl}), version: {msf_version}")
-        _msf_client_instance = client
-        return _msf_client_instance
+        
+        # Add connection timeout to prevent blocking startup
+        import socket as sock_module
+        default_timeout = sock_module.getdefaulttimeout()
+        try:
+            sock_module.setdefaulttimeout(10.0)  # 10 second timeout for initial connection
+            
+            client = MsfRpcClient(
+                password=MSF_PASSWORD,
+                server=MSF_SERVER,
+                port=msf_port,
+                ssl=msf_ssl
+            )
+            # Test connection during initialization
+            logger.debug("Testing connection with core.version call...")
+            version_info = client.core.version
+            msf_version = version_info.get('version', 'unknown') if isinstance(version_info, dict) else 'unknown'
+            logger.info(f"Successfully connected to Metasploit RPC at {MSF_SERVER}:{msf_port} (SSL: {msf_ssl}), version: {msf_version}")
+            _msf_client_instance = client
+            return _msf_client_instance
+        finally:
+            # Restore original timeout
+            sock_module.setdefaulttimeout(default_timeout)
     except MsfRpcError as e:
         logger.error(f"Failed to connect or authenticate to Metasploit RPC ({MSF_SERVER}:{msf_port}, SSL: {msf_ssl}): {e}")
         raise ConnectionError(f"Failed to connect/authenticate to Metasploit RPC: {e}") from e
@@ -2050,13 +2060,17 @@ if __name__ == "__main__":
     parser.add_argument('--mock', action='store_true', help='Run in mock mode without Metasploit (for testing)')
     args = parser.parse_args()
 
-    # Initialize MSF Client - Critical for server function (unless in mock mode)
+    # Initialize MSF Client - Non-blocking startup (graceful degradation)
     if not args.mock:
         try:
+            logger.info("Attempting to connect to Metasploit RPC in background...")
             initialize_msf_client()
+            logger.info("✅ Metasploit RPC connection established at startup")
         except (ValueError, ConnectionError, RuntimeError) as e:
-            logger.critical(f"CRITICAL: Failed to initialize Metasploit client on startup: {e}. Server cannot function.")
-            sys.exit(1) # Exit if MSF connection fails at start
+            logger.warning(f"⚠️  Failed to initialize Metasploit client on startup: {e}")
+            logger.warning("Server will start anyway with degraded functionality (health check will show 'degraded')")
+            logger.warning("Metasploit tools will attempt to reconnect on first use")
+            # DO NOT exit - let server start with degraded MSF connectivity
     else:
         logger.info("Running in MOCK mode - Metasploit connection disabled for testing")
 
