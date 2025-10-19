@@ -310,7 +310,7 @@ if all(summary.values()):
     print("\n📝 Prochaines étapes:")
     print("   1. Configurer les variables Render (MSF_PASSWORD, MSF_SSL=false)")
     print("   2. Déployer sur Render")
-    print("   3. Tester via https://metasploitmcp.onrender.com/healthz")
+    print("   3. Tester via https://metasploitmcp-1.onrender.com/healthz")
     print("\n📚 Documentation:")
     print("   - RENDER_ENV_CONFIG.md : Configuration Render")
     print("   - PASSWORD_RESOLUTION.md : Résolution des mots de passe")

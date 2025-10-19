@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # URL du serveur Render.com
-RENDER_URL="${RENDER_URL:-https://metasploitmcp.onrender.com}"
+RENDER_URL="${RENDER_URL:-https://metasploitmcp-1.onrender.com}"
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
 echo -e "${BLUE}  Test de Diagnostic du Serveur MetasploitMCP${NC}"

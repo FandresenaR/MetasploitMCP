@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-RENDER_URL = "https://metasploitmcp.onrender.com"
+RENDER_URL = "https://metasploitmcp-1.onrender.com"
 
 print("╔" + "="*68 + "╗")
 print("║" + " "*10 + "🎯 TEST BOUT EN BOUT - CLIENT → MCP → MSF" + " "*13 + "║")

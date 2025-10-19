@@ -123,7 +123,7 @@ print("─"*70)
 try:
     import requests
     
-    render_url = "https://metasploitmcp.onrender.com/healthz"
+    render_url = "https://metasploitmcp-1.onrender.com/healthz"
     print(f"🔍 Test de {render_url}...")
     
     response = requests.get(render_url, timeout=10)
@@ -183,7 +183,7 @@ print("""
       MSF_SSL = false
       
    4. Save Changes → Auto-redéploiement (2-3 min)
-   5. Vérifier: curl https://metasploitmcp.onrender.com/healthz
+   5. Vérifier: curl https://metasploitmcp-1.onrender.com/healthz
 
 📚 Documentation:
    - RENDER_ENV_CONFIG.md
