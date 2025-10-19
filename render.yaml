@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python MetasploitMCP_v2.py --transport http --host 0.0.0.0 --port $PORT
+    startCommand: python MetasploitMCP.py --transport http --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
