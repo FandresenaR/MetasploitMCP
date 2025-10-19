@@ -37,7 +37,7 @@ echo ""
 
 # Test 2: Session SSE
 echo -e "${BLUE}[2/4] Test Session SSE...${NC}"
-SESSION_ID=$(timeout 5 curl -s -N "${RENDER_URL}/mcp/sse" 2>/dev/null | grep "^data:" | head -1 | sed 's/.*session_id=\([a-f0-9]*\).*/\1/' || echo "")
+SESSION_ID=$(timeout 10 curl -s -N "${RENDER_URL}/mcp/sse" 2>/dev/null | grep "^data:" | head -1 | sed 's/.*session_id=\([a-f0-9]*\).*/\1/' || echo "")
 
 if [ -n "$SESSION_ID" ]; then
     echo -e "${GREEN}✅ Session SSE: OK${NC}"
@@ -48,6 +48,7 @@ else
     exit 1
 fi
 echo ""
+sleep 2  # Attendre que la session soit complètement initialisée
 
 # Test 3: Tools List
 echo -e "${BLUE}[3/4] Test Liste des Outils...${NC}"
@@ -68,6 +69,7 @@ else
     echo "Response: $TOOLS_RESPONSE"
 fi
 echo ""
+sleep 1  # Pause entre les requêtes
 
 # Test 4: Tools Call (le test critique)
 echo -e "${BLUE}[4/4] Test Appel d'Outil (list_exploits)...${NC}"

@@ -1923,20 +1923,43 @@ sse = SseServerTransport("/messages/")
 class SseEndpoint:
     async def __call__(self, scope, receive, send):
         """Handle Server-Sent Events connection for MCP communication."""
+        from anyio import ClosedResourceError
+        
         client_host = scope.get('client')[0] if scope.get('client') else 'unknown'
         client_port = scope.get('client')[1] if scope.get('client') else 'unknown'
         logger.info(f"New SSE connection from {client_host}:{client_port}")
-        async with sse.connect_sse(scope, receive, send) as (read_stream, write_stream):
-            await mcp._mcp_server.run(read_stream, write_stream, mcp._mcp_server.create_initialization_options())
-        logger.info(f"SSE connection closed from {client_host}:{client_port}")
+        
+        try:
+            async with sse.connect_sse(scope, receive, send) as (read_stream, write_stream):
+                await mcp._mcp_server.run(read_stream, write_stream, mcp._mcp_server.create_initialization_options())
+            logger.info(f"SSE connection closed normally from {client_host}:{client_port}")
+        except ClosedResourceError:
+            # Client disconnected - this is normal for SSE connections
+            logger.info(f"SSE connection closed by client {client_host}:{client_port}")
+            pass
+        except Exception as e:
+            logger.error(f"Error in SSE connection from {client_host}:{client_port}: {e}", exc_info=True)
+            raise
 
 class MessagesEndpoint:
     async def __call__(self, scope, receive, send):
         """Handle client POST messages for MCP communication."""
+        from anyio import ClosedResourceError
+        
         client_host = scope.get('client')[0] if scope.get('client') else 'unknown'
         client_port = scope.get('client')[1] if scope.get('client') else 'unknown'
         logger.info(f"Received POST message from {client_host}:{client_port}")
-        await sse.handle_post_message(scope, receive, send)
+        
+        try:
+            await sse.handle_post_message(scope, receive, send)
+        except ClosedResourceError:
+            # Client disconnected before response was sent
+            logger.warning(f"Client {client_host}:{client_port} disconnected before response could be sent")
+            # Don't propagate the error - this is expected behavior when clients timeout
+            pass
+        except Exception as e:
+            logger.error(f"Error handling POST message from {client_host}:{client_port}: {e}", exc_info=True)
+            raise
 
 # Define FastAPI routes FIRST before mounting MCP router
 @app.get("/", tags=["Health"])
