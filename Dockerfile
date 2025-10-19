@@ -1,6 +1,11 @@
 # Use official Python runtime as base image
 FROM python:3.12-slim
 
+# FORCE REBUILD - Cache bust timestamp: 2025-10-19-21:05
+# This ensures Render.com doesn't use corrupted cached layers
+ARG CACHEBUST=2025-10-19-21:05
+RUN echo "Build timestamp: ${CACHEBUST}"
+
 # Set working directory
 WORKDIR /app
 
