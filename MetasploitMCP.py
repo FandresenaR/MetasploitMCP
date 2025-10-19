@@ -384,26 +384,6 @@ async def run_command_safely(console: MsfConsole, cmd: str, execution_timeout: O
         logger.exception(f"Error executing console command '{cmd}'")
         raise RuntimeError(f"Failed executing console command '{cmd}': {e}") from e
 
-from mcp.server.session import ServerSession
-
-####################################################################################
-# Temporary monkeypatch which avoids crashing when a POST message is received
-# before a connection has been initialized, e.g: after a deployment.
-# pylint: disable-next=protected-access
-old__received_request = ServerSession._received_request
-
-
-async def _received_request(self, *args, **kwargs):
-    try:
-        return await old__received_request(self, *args, **kwargs)
-    except RuntimeError:
-        pass
-
-
-# pylint: disable-next=protected-access
-ServerSession._received_request = _received_request
-####################################################################################
-
 # --- MCP Server Initialization ---
 mcp = FastMCP("Metasploit Tools Enhanced (Streamlined)")
 
